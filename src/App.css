@@ -1,0 +1,66 @@
+.app-shell {
+  min-height: 100vh;
+}
+
+.foodie-navbar {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  background: rgba(248, 245, 236, 0.82);
+  border-bottom: 1px solid rgba(40, 60, 48, 0.08);
+}
+
+.foodie-surface {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.94),
+    rgba(244, 250, 246, 0.92)
+  );
+}
+
+.foodie-accent {
+  background: linear-gradient(
+    180deg,
+    rgba(239, 251, 244, 0.96),
+    rgba(220, 243, 235, 0.96)
+  );
+}
+
+.goal-tile {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(39, 95, 82, 0.1);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  min-height: 100%;
+}
+
+.goal-tile:hover,
+.goal-tile:focus-visible {
+  border-color: rgba(31, 111, 95, 0.55);
+  box-shadow: 0 0 0 0.2rem rgba(31, 111, 95, 0.14);
+}
+
+.goal-tile-active {
+  border-color: rgba(31, 111, 95, 0.55);
+  background: rgba(236, 248, 243, 0.95);
+}
+
+.macro-chip {
+  border-radius: 999px;
+  background: rgba(240, 244, 241, 0.9);
+  color: #44544d;
+  font-size: 0.875rem;
+  padding: 0.45rem 0.8rem;
+}
+
+.foodie-auth-panel {
+  background: linear-gradient(
+    180deg,
+    rgba(235, 248, 241, 0.92),
+    rgba(224, 241, 234, 0.92)
+  );
+}
+
+.foodie-language-select {
+  width: auto;
+  min-width: 8rem;
+}

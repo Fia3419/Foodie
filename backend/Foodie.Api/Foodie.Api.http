@@ -1,0 +1,113 @@
+@apiHost = http://localhost:5013
+@UserName = foodie-demo
+@Email = foodie-demo@example.com
+@Password = Passw0rd!
+@GoalMode = gain-strength
+@Language = en
+@DeviceName = Foodie API scratch file
+@AccessToken = paste-access-token-here
+@RefreshToken = paste-refresh-token-here
+@SessionId = paste-session-id-here
+
+### Register
+POST {{apiHost}}/api/auth/register
+Content-Type: application/json
+Accept-Language: {{Language}}
+X-Device-Name: {{DeviceName}}
+
+{
+	"userName": "{{UserName}}",
+	"email": "{{Email}}",
+	"password": "{{Password}}",
+	"goalMode": "{{GoalMode}}"
+}
+
+### Login
+POST {{apiHost}}/api/auth/login
+Content-Type: application/json
+Accept-Language: {{Language}}
+X-Device-Name: {{DeviceName}}
+
+{
+	"email": "{{Email}}",
+	"password": "{{Password}}"
+}
+
+### Refresh Session
+POST {{apiHost}}/api/auth/refresh
+Content-Type: application/json
+Accept-Language: {{Language}}
+
+{
+	"refreshToken": "{{RefreshToken}}"
+}
+
+### Current Session Profile
+GET {{apiHost}}/api/session
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Dashboard Summary
+GET {{apiHost}}/api/dashboard
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Today's Food Log
+GET {{apiHost}}/api/food-log/today
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Add Meal Log Entry
+POST {{apiHost}}/api/food-log
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+Accept-Language: {{Language}}
+
+{
+	"mealName": "Lunch",
+	"foodName": "Chicken rice bowl",
+	"calories": 620,
+	"protein": 45,
+	"carbs": 58,
+	"fat": 18,
+	"logDate": "2026-04-02",
+	"loggedAt": "12:30",
+	"clientMutationId": "http-scratch-meal-2026-04-02"
+}
+
+### Weight Trend
+GET {{apiHost}}/api/progress/weight
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Add Weight Entry
+POST {{apiHost}}/api/progress/weight
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+Accept-Language: {{Language}}
+
+{
+	"date": "2026-04-02",
+	"weightKg": 74.1,
+	"clientMutationId": "http-scratch-weight-2026-04-02"
+}
+
+### Recipes
+GET {{apiHost}}/api/recipes
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Active Sessions
+GET {{apiHost}}/api/auth/sessions
+Authorization: Bearer {{AccessToken}}
+Accept-Language: {{Language}}
+
+### Logout Current Session
+POST {{apiHost}}/api/auth/logout
+Authorization: Bearer {{AccessToken}}
+Content-Type: application/json
+Accept-Language: {{Language}}
+
+{
+	"sessionId": "{{SessionId}}"
+}

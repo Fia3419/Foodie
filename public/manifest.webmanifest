@@ -1,0 +1,17 @@
+{
+  "name": "Foodie",
+  "short_name": "Foodie",
+  "description": "Food tracking for general health, strength gain, and weight loss.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5efe2",
+  "theme_color": "#1f6f5f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

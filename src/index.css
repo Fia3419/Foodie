@@ -1,0 +1,44 @@
+:root {
+  --bs-body-font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  --bs-primary: #1f6f5f;
+  --bs-primary-rgb: 31, 111, 95;
+  --bs-success: #2f8f73;
+  --bs-success-rgb: 47, 143, 115;
+  --bs-warning: #dca14a;
+  --bs-warning-rgb: 220, 161, 74;
+  --bs-info: #6b9db5;
+  --bs-info-rgb: 107, 157, 181;
+  --bs-body-color: #47564f;
+  --bs-body-bg: #f5efe2;
+  --bs-border-color: rgba(40, 60, 48, 0.1);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(255, 255, 255, 0.88),
+      transparent 30%
+    ),
+    linear-gradient(180deg, #f7f3e8 0%, #edf4ef 55%, #eef5f3 100%);
+}
+
+a {
+  text-decoration: none;
+}
+
+.navbar-nav .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+}

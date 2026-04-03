@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="foodie.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="backend\Foodie.Api\Foodie.Api.csproj">
+    <Build />
+  </Project>
+</Solution>

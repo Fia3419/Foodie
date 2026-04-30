@@ -57,6 +57,31 @@ public sealed class FoodLogController : ControllerBase
         return Ok(new DailyLogDto(targetDate.ToString("yyyy-MM-dd"), items));
     }
 
+    [HttpGet("recent")]
+    public async Task<ActionResult<IReadOnlyList<MealLogItemDto>>> GetRecent([FromQuery] int limit = 8, CancellationToken cancellationToken = default)
+    {
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var boundedLimit = Math.Clamp(limit, 1, 20);
+
+        var items = await _dbContext.MealLogEntries
+            .AsNoTracking()
+            .Where(entry => entry.UserId == userId)
+            .OrderByDescending(entry => entry.CreatedAtUtc)
+            .Take(boundedLimit)
+            .Select(entry => new MealLogItemDto(
+                entry.Id.ToString(),
+                entry.MealName,
+                entry.FoodName,
+                entry.Calories,
+                entry.Protein,
+                entry.Carbs,
+                entry.Fat,
+                entry.LoggedAt))
+            .ToListAsync(cancellationToken);
+
+        return Ok(items);
+    }
+
     [HttpPost]
     public async Task<ActionResult<MealLogItemDto>> Create(CreateMealLogEntryRequestDto request, CancellationToken cancellationToken)
     {

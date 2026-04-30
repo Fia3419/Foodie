@@ -12,9 +12,13 @@ import {
   RecipeSummary,
   RegisterRequest,
   RecipeIngredient,
+  NutritionMacros,
+  NutritionSearchResult,
+  SavedFoodSummary,
   SessionSummary,
   SessionProfile,
   UpdateMealLogEntryRequest,
+  UpsertSavedFoodRequest,
   UpsertRecipeRequest,
   WeightEntry,
 } from "../types/models";
@@ -31,7 +35,18 @@ const dashboardQueryKey = ["dashboard-summary"];
 const dailyLogQueryKey = ["daily-log"];
 const weightTrendQueryKey = ["weight-trend"];
 const recipesQueryKey = ["recipes"];
+const savedFoodsQueryKey = ["saved-foods"];
+const recentMealsQueryKey = ["recent-meals"];
 const sessionsQueryKey = ["auth-sessions"];
+
+type OfflineSupportedKind = "create-food-log" | "create-weight-entry";
+
+interface OfflinePayloadMap {
+  "create-food-log": CreateMealLogEntryRequest & { clientMutationId: string };
+  "create-weight-entry": CreateWeightEntryRequest & {
+    clientMutationId: string;
+  };
+}
 
 const toAuthSession = (payload: AuthSession): AuthSession => payload;
 
@@ -95,6 +110,20 @@ const appendWeightEntry = (
 
 const createMutationId = () => window.crypto.randomUUID();
 
+export const fetchNutritionSearch = async (query: string) =>
+  (
+    await httpClient.get<NutritionSearchResult[]>(`/recipes/nutrition/search`, {
+      params: { query: query.trim() },
+    })
+  ).data;
+
+export const fetchNutritionMacros = async (foodNumber: number, grams: number) =>
+  (
+    await httpClient.get<NutritionMacros>(`/recipes/nutrition/${foodNumber}`, {
+      params: { grams },
+    })
+  ).data;
+
 interface OfflineMutationResult<TItem> {
   item: TItem;
   queued: boolean;
@@ -112,23 +141,26 @@ const refreshQueuedActionBadge = async (
   await refreshQueuedActions(queuedCount);
 };
 
-interface OfflineSubmitOptions<TPayload, TItem> {
+interface OfflineSubmitOptions<TKind extends OfflineSupportedKind, TItem> {
   authSession: AuthSession | null;
   isOnline: boolean;
-  kind: "create-food-log" | "create-weight-entry";
-  payload: TPayload & { clientMutationId: string };
+  kind: TKind;
+  payload: OfflinePayloadMap[TKind];
   createQueuedItem: () => TItem;
   postOnline: () => Promise<TItem>;
 }
 
-const submitWithOfflineSupport = async <TPayload, TItem>({
+const submitWithOfflineSupport = async <
+  TKind extends OfflineSupportedKind,
+  TItem,
+>({
   authSession,
   isOnline,
   kind,
   payload,
   createQueuedItem,
   postOnline,
-}: OfflineSubmitOptions<TPayload, TItem>): Promise<
+}: OfflineSubmitOptions<TKind, TItem>): Promise<
   OfflineMutationResult<TItem>
 > => {
   if (!isOnline && authSession) {
@@ -174,14 +206,30 @@ export const useDashboardSummary = () => {
   });
 };
 
-export const useDailyLog = () => {
+export const useDailyLog = (date?: string, options?: { enabled?: boolean }) => {
+  const { authSession } = useSessionContext();
+  const enabled = options?.enabled ?? true;
+
+  return useQuery({
+    queryKey: [...dailyLogQueryKey, date ?? "today"],
+    enabled: Boolean(authSession) && enabled,
+    queryFn: async () =>
+      (
+        await httpClient.get<DailyLog>("/food-log/today", {
+          params: date ? { date } : undefined,
+        })
+      ).data,
+  });
+};
+
+export const useRecentMeals = () => {
   const { authSession } = useSessionContext();
 
   return useQuery({
-    queryKey: dailyLogQueryKey,
+    queryKey: recentMealsQueryKey,
     enabled: Boolean(authSession),
     queryFn: async () =>
-      (await httpClient.get<DailyLog>("/food-log/today")).data,
+      (await httpClient.get<MealLogItem[]>("/food-log/recent")).data,
   });
 };
 
@@ -204,6 +252,17 @@ export const useRecipes = () => {
     enabled: Boolean(authSession),
     queryFn: async () =>
       (await httpClient.get<RecipeSummary[]>("/recipes")).data,
+  });
+};
+
+export const useSavedFoods = () => {
+  const { authSession } = useSessionContext();
+
+  return useQuery({
+    queryKey: savedFoodsQueryKey,
+    enabled: Boolean(authSession),
+    queryFn: async () =>
+      (await httpClient.get<SavedFoodSummary[]>("/saved-foods")).data,
   });
 };
 
@@ -325,9 +384,12 @@ export const useCreateMealLogMutation = () => {
       };
     },
     onSuccess: async ({ item, logDate, queued }) => {
-      queryClient.setQueryData<DailyLog | undefined>(
-        dailyLogQueryKey,
-        (currentValue) => appendMealLogItem(currentValue, item, logDate),
+      queryClient.setQueriesData<DailyLog | undefined>(
+        { queryKey: dailyLogQueryKey },
+        (currentValue) =>
+          currentValue?.date === logDate
+            ? appendMealLogItem(currentValue, item, logDate)
+            : currentValue,
       );
 
       if (queued && authSession) {
@@ -335,6 +397,8 @@ export const useCreateMealLogMutation = () => {
       }
 
       void queryClient.invalidateQueries({ queryKey: dashboardQueryKey });
+      void queryClient.invalidateQueries({ queryKey: dailyLogQueryKey });
+      void queryClient.invalidateQueries({ queryKey: recentMealsQueryKey });
     },
   });
 };
@@ -381,6 +445,61 @@ export const useDeleteMealLogMutation = () => {
     },
   });
 };
+
+export const useCreateSavedFoodMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: UpsertSavedFoodRequest) =>
+      (await httpClient.post<SavedFoodSummary>("/saved-foods", request)).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: savedFoodsQueryKey });
+    },
+  });
+};
+
+export const useDeleteSavedFoodMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      await httpClient.delete(`/saved-foods/${id}`);
+      return id;
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: savedFoodsQueryKey });
+    },
+  });
+};
+
+export const useUpdateSavedFoodMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      request,
+    }: {
+      id: string;
+      request: UpsertSavedFoodRequest;
+    }) =>
+      (await httpClient.put<SavedFoodSummary>(`/saved-foods/${id}`, request))
+        .data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: savedFoodsQueryKey });
+    },
+  });
+};
+
+export const useLookupSavedFoodByBarcodeMutation = () =>
+  useMutation({
+    mutationFn: async (barcode: string) =>
+      (
+        await httpClient.get<SavedFoodSummary>(
+          `/saved-foods/barcode/${encodeURIComponent(barcode)}/lookup`,
+        )
+      ).data,
+  });
 
 export const useCreateWeightEntryMutation = () => {
   const queryClient = useQueryClient();
@@ -457,6 +576,49 @@ export const useDeleteRecipeMutation = () => {
       await httpClient.delete(`/recipes/${id}`);
       return id;
     },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: recipesQueryKey });
+    },
+  });
+};
+
+export const useNutritionSearchQuery = (query: string) => {
+  const trimmed = query.trim();
+  const { authSession } = useSessionContext();
+
+  return useQuery({
+    queryKey: ["nutrition-search", trimmed],
+    enabled: Boolean(authSession) && trimmed.length >= 2,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => fetchNutritionSearch(trimmed),
+  });
+};
+
+export const useNutritionMacrosMutation = () =>
+  useMutation({
+    mutationFn: async ({
+      foodNumber,
+      grams,
+    }: {
+      foodNumber: number;
+      grams: number;
+    }) => fetchNutritionMacros(foodNumber, grams),
+  });
+
+export const useImportRecipesMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (request: {
+      query: string;
+      count: number;
+      translateToSwedish: boolean;
+    }) =>
+      (
+        await httpClient.post<RecipeSummary[]>("/recipes/import", request, {
+          timeout: 30000,
+        })
+      ).data,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: recipesQueryKey });
     },

@@ -65,6 +65,21 @@ export interface MealLogItem {
   loggedAt: string;
 }
 
+export type SavedFoodKind = "favorite" | "template" | "packaged";
+
+export interface SavedFoodSummary {
+  id: string;
+  kind: SavedFoodKind;
+  name: string;
+  mealName: string;
+  barcode: string | null;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  isSaved: boolean;
+}
+
 export interface DailyLog {
   date: string;
   items: MealLogItem[];
@@ -81,6 +96,8 @@ export interface RecipeSummary {
   servings: number;
   caloriesPerServing: number;
   proteinPerServing: number;
+  carbsPerServing: number;
+  fatPerServing: number;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string;
@@ -127,15 +144,43 @@ export interface UpsertRecipeRequest {
   servings: number;
   caloriesPerServing: number;
   proteinPerServing: number;
+  carbsPerServing: number;
+  fatPerServing: number;
   tags: string[];
   ingredients: RecipeIngredient[];
   instructions: string;
+}
+
+export interface UpsertSavedFoodRequest {
+  kind: SavedFoodKind;
+  name: string;
+  mealName: string;
+  barcode?: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
 }
 
 export interface RecipeIngredient {
   name: string;
   amount: number;
   unit: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+export interface NutritionSearchResult {
+  foodNumber: number;
+  name: string;
+}
+
+export interface NutritionMacros {
+  name: string;
+  foodNumber: number;
+  grams: number;
   calories: number;
   protein: number;
   carbs: number;

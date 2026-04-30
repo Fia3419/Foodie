@@ -48,12 +48,48 @@ export interface Translation {
   protein: string;
   carbs: string;
   fat: string;
+  caloriesDescription: string;
+  proteinDescription: string;
+  carbsDescription: string;
+  fatDescription: string;
+  caloriesPerServingDescription: string;
+  proteinPerServingDescription: string;
+  carbsPerServingDescription: string;
+  fatPerServingDescription: string;
   target: (value: number) => string;
   foodLogLoading: string;
   foodLogUnavailable: string;
   dailyLog: string;
   mealsAndMacros: string;
   logDescription: string;
+  quickActions: string;
+  quickActionsDescription: string;
+  repeatLatestMeal: string;
+  copyYesterday: string;
+  recentMeals: string;
+  favorites: string;
+  templates: string;
+  packagedFoods: string;
+  barcode: string;
+  lookupBarcode: string;
+  scanBarcode: string;
+  saveAsFavorite: string;
+  saveAsTemplate: string;
+  saveAsPackaged: string;
+  updateSavedFood: string;
+  cancelSavedFoodEdit: string;
+  editingSavedFood: string;
+  barcodeLookupNotFound: string;
+  externalBarcodeResult: string;
+  noRecentMeals: string;
+  noFavorites: string;
+  noTemplates: string;
+  noPackagedFoods: string;
+  useSavedFood: string;
+  barcodeScannerTitle: string;
+  barcodeScannerDescription: string;
+  barcodeScannerUnsupported: string;
+  closeScanner: string;
   onlineWrites: string;
   offlineWrites: string;
   meal: string;
@@ -82,6 +118,17 @@ export interface Translation {
   recipes: string;
   recipesTitle: string;
   recipesDescription: string;
+  logRecipe: string;
+  recipeLogTitle: string;
+  recipeLogDescription: string;
+  servingsToLog: string;
+  addToGroceryList: string;
+  removeFromGroceryList: string;
+  groceryList: string;
+  groceryListDescription: string;
+  copyGroceryList: string;
+  noGroceriesSelected: string;
+  plannedRecipes: string;
   createRecipe: string;
   editRecipe: string;
   deleteRecipe: string;
@@ -90,6 +137,8 @@ export interface Translation {
   servings: string;
   caloriesPerServing: string;
   proteinPerServing: string;
+  carbsPerServing: string;
+  fatPerServing: string;
   tags: string;
   ingredients: string;
   instructions: string;
@@ -107,11 +156,42 @@ export interface Translation {
   securityActions: string;
   revokeOtherSessions: string;
   ingredientNutrition: string;
+  ingredientNutritionDescription: string;
+  ingredientName: string;
+  ingredientAmount: string;
+  ingredientUnit: string;
+  computedMacrosTitle: string;
+  computedMacrosDescription: string;
+  computedMacrosTotal: string;
+  computedMacrosPerServing: string;
+  computedMacrosApply: string;
+  autoFillButton: string;
+  autoFillRunning: string;
+  autoFillUpdated: string;
+  autoFillSkipped: string;
+  autoFillFailed: string;
   currentSession: string;
   revokeSession: string;
   sessionRevoked: string;
   activeUntil: string;
   lastUsed: string;
+  nutritionLookupTitle: string;
+  nutritionLookupPlaceholder: string;
+  nutritionLookupApply: string;
+  nutritionLookupNoResults: string;
+  nutritionLookupSearching: string;
+  nutritionLookupSource: string;
+  nutritionLookupGramsLabel: string;
+  importRecipesTitle: string;
+  importRecipesDescription: string;
+  importRecipesPlaceholder: string;
+  importRecipesAction: string;
+  importRecipesInProgress: string;
+  importRecipesQueryRequired: string;
+  importRecipesNotConfigured: string;
+  importRecipesNoResults: string;
+  importRecipesSuccess: (count: number) => string;
+  translateToSwedish: string;
 }
 
 export const translations: Record<AppLanguage, Translation> = {
@@ -166,6 +246,14 @@ export const translations: Record<AppLanguage, Translation> = {
     protein: "Protein",
     carbs: "Carbs",
     fat: "Fat",
+    caloriesDescription: "Total energy from the food (kcal).",
+    proteinDescription: "Builds muscle and supports satiety (g).",
+    carbsDescription: "Quick energy for body and brain (g).",
+    fatDescription: "Sustained energy and hormone health (g).",
+    caloriesPerServingDescription: "Energy in one portion of the recipe.",
+    proteinPerServingDescription: "Protein in one portion of the recipe.",
+    carbsPerServingDescription: "Carbs in one portion of the recipe.",
+    fatPerServingDescription: "Fat in one portion of the recipe.",
     target: (value) => `Target ${value}`,
     foodLogLoading: "Loading today's food log...",
     foodLogUnavailable: "Your food log could not be loaded.",
@@ -173,6 +261,38 @@ export const translations: Record<AppLanguage, Translation> = {
     mealsAndMacros: "Meals and macros for today",
     logDescription:
       "Keep entries fast, readable, and ready for offline capture.",
+    quickActions: "Quick actions",
+    quickActionsDescription:
+      "Repeat recent meals, reuse saved foods, or scan a packaged item barcode.",
+    repeatLatestMeal: "Repeat latest meal",
+    copyYesterday: "Copy yesterday",
+    recentMeals: "Recent meals",
+    favorites: "Favorites",
+    templates: "Templates",
+    packagedFoods: "Packaged foods",
+    barcode: "Barcode",
+    lookupBarcode: "Find barcode",
+    scanBarcode: "Scan barcode",
+    saveAsFavorite: "Save as favorite",
+    saveAsTemplate: "Save as template",
+    saveAsPackaged: "Save as packaged food",
+    updateSavedFood: "Update saved food",
+    cancelSavedFoodEdit: "Cancel saved food edit",
+    editingSavedFood:
+      "Editing a saved food will update your stored shortcut instead of creating a new one.",
+    barcodeLookupNotFound: "No product was found for that barcode.",
+    externalBarcodeResult: "External lookup result",
+    noRecentMeals: "No recent meals yet.",
+    noFavorites: "No favorites saved yet.",
+    noTemplates: "No templates saved yet.",
+    noPackagedFoods: "No packaged foods saved yet.",
+    useSavedFood: "Use",
+    barcodeScannerTitle: "Barcode scanner",
+    barcodeScannerDescription:
+      "Point your camera at a barcode to prefill a saved packaged food.",
+    barcodeScannerUnsupported:
+      "Barcode scanning is not supported on this device. Enter the barcode manually instead.",
+    closeScanner: "Close scanner",
     onlineWrites: "Writes go straight to API",
     offlineWrites: "Writes will queue offline",
     meal: "Meal",
@@ -204,6 +324,19 @@ export const translations: Record<AppLanguage, Translation> = {
     recipesTitle: "Reusable meals for faster logging",
     recipesDescription:
       "Create your own recipes and edit the ones you own while keeping the shared library intact.",
+    logRecipe: "Log recipe",
+    recipeLogTitle: "Log recipe as meal",
+    recipeLogDescription:
+      "Send a saved recipe straight into the food log with serving scaling.",
+    servingsToLog: "Servings to log",
+    addToGroceryList: "Add to grocery list",
+    removeFromGroceryList: "Remove from grocery list",
+    groceryList: "Grocery list",
+    groceryListDescription:
+      "Pick recipes and Foodie will group ingredients into one list.",
+    copyGroceryList: "Copy grocery list",
+    noGroceriesSelected: "Select one or more recipes to build a grocery list.",
+    plannedRecipes: "Planned recipes",
     createRecipe: "Create recipe",
     editRecipe: "Edit recipe",
     deleteRecipe: "Delete recipe",
@@ -212,6 +345,8 @@ export const translations: Record<AppLanguage, Translation> = {
     servings: "Servings",
     caloriesPerServing: "Calories per serving",
     proteinPerServing: "Protein per serving",
+    carbsPerServing: "Carbs per serving",
+    fatPerServing: "Fat per serving",
     tags: "Tags",
     ingredients: "Ingredients",
     instructions: "Instructions",
@@ -230,11 +365,46 @@ export const translations: Record<AppLanguage, Translation> = {
     securityActions: "Security actions",
     revokeOtherSessions: "Revoke other sessions",
     ingredientNutrition: "Ingredient nutrition",
+    ingredientNutritionDescription:
+      "Per-ingredient macros are optional. Use them as a fallback when the per-serving values above are blank, or fill them automatically with the Livsmedelsverket lookup below.",
+    ingredientName: "Name",
+    ingredientAmount: "Amount",
+    ingredientUnit: "Unit",
+    computedMacrosTitle: "Calculated from ingredients",
+    computedMacrosDescription:
+      "Live totals based on the ingredient macros below.",
+    computedMacrosTotal: "Total",
+    computedMacrosPerServing: "Per serving",
+    computedMacrosApply: "Use as per-serving values",
+    autoFillButton: "Look up macros for all ingredients",
+    autoFillRunning: "Looking up…",
+    autoFillUpdated: "updated",
+    autoFillSkipped: "skipped (unknown unit or missing name/amount)",
+    autoFillFailed: "not found",
     currentSession: "Current session",
     revokeSession: "Revoke session",
     sessionRevoked: "Revoked",
     activeUntil: "Active until",
     lastUsed: "Last used",
+    nutritionLookupTitle: "Look up nutrition (Livsmedelsverket)",
+    nutritionLookupPlaceholder: "Search food, e.g. chicken breast",
+    nutritionLookupApply: "Use macros",
+    nutritionLookupNoResults: "No matches",
+    nutritionLookupSearching: "Searching...",
+    nutritionLookupSource: "Source: Livsmedelsverket",
+    nutritionLookupGramsLabel: "Grams",
+    importRecipesTitle: "Import recipes",
+    importRecipesDescription:
+      "Search TheMealDB and save matching recipes to your library.",
+    importRecipesPlaceholder: "e.g. chicken curry",
+    importRecipesAction: "Import",
+    importRecipesInProgress: "Importing recipes...",
+    importRecipesQueryRequired: "Enter a search term before importing.",
+    importRecipesNotConfigured:
+      "Recipe import service is not configured on the server.",
+    importRecipesNoResults: "No recipes were imported.",
+    importRecipesSuccess: (count) => `Imported ${count} recipe(s).`,
+    translateToSwedish: "Translate to Swedish",
   },
   sv: {
     appName: "Foodie",
@@ -288,6 +458,14 @@ export const translations: Record<AppLanguage, Translation> = {
     protein: "Protein",
     carbs: "Kolhydrater",
     fat: "Fett",
+    caloriesDescription: "Total energi från maten (kcal).",
+    proteinDescription: "Bygger muskler och ger mättnad (g).",
+    carbsDescription: "Snabb energi för kropp och hjärna (g).",
+    fatDescription: "Långvarig energi och hormonbalans (g).",
+    caloriesPerServingDescription: "Energi i en portion av receptet.",
+    proteinPerServingDescription: "Protein i en portion av receptet.",
+    carbsPerServingDescription: "Kolhydrater i en portion av receptet.",
+    fatPerServingDescription: "Fett i en portion av receptet.",
     target: (value) => `Mål ${value}`,
     foodLogLoading: "Laddar dagens matlogg...",
     foodLogUnavailable: "Din matlogg kunde inte laddas.",
@@ -295,6 +473,38 @@ export const translations: Record<AppLanguage, Translation> = {
     mealsAndMacros: "Måltider och makron för idag",
     logDescription:
       "Håll registreringen snabb, tydlig och redo för offlineanvändning.",
+    quickActions: "Snabbåtgärder",
+    quickActionsDescription:
+      "Upprepa nyliga måltider, återanvänd sparade livsmedel eller skanna en streckkod.",
+    repeatLatestMeal: "Upprepa senaste måltiden",
+    copyYesterday: "Kopiera gårdagen",
+    recentMeals: "Senaste måltider",
+    favorites: "Favoriter",
+    templates: "Mallmåltider",
+    packagedFoods: "Förpackade livsmedel",
+    barcode: "Streckkod",
+    lookupBarcode: "Hämta streckkod",
+    scanBarcode: "Skanna streckkod",
+    saveAsFavorite: "Spara som favorit",
+    saveAsTemplate: "Spara som mall",
+    saveAsPackaged: "Spara som förpackad vara",
+    updateSavedFood: "Uppdatera sparat livsmedel",
+    cancelSavedFoodEdit: "Avbryt redigering av sparat livsmedel",
+    editingSavedFood:
+      "När du redigerar ett sparat livsmedel uppdateras den sparade genvägen istället för att en ny skapas.",
+    barcodeLookupNotFound: "Ingen produkt hittades för den streckkoden.",
+    externalBarcodeResult: "Resultat från extern streckkodssökning",
+    noRecentMeals: "Inga nyliga måltider ännu.",
+    noFavorites: "Inga favoriter sparade ännu.",
+    noTemplates: "Inga mallar sparade ännu.",
+    noPackagedFoods: "Inga förpackade livsmedel sparade ännu.",
+    useSavedFood: "Använd",
+    barcodeScannerTitle: "Streckkodsläsare",
+    barcodeScannerDescription:
+      "Rikta kameran mot en streckkod för att fylla i ett sparat förpackat livsmedel.",
+    barcodeScannerUnsupported:
+      "Streckkodsskanning stöds inte på den här enheten. Ange streckkoden manuellt istället.",
+    closeScanner: "Stäng läsaren",
     onlineWrites: "Skrivningar går direkt till API:t",
     offlineWrites: "Skrivningar köas offline",
     meal: "Måltid",
@@ -326,6 +536,20 @@ export const translations: Record<AppLanguage, Translation> = {
     recipesTitle: "Återanvändbara måltider för snabbare loggning",
     recipesDescription:
       "Skapa egna recept och redigera dem du äger, samtidigt som det delade biblioteket finns kvar.",
+    logRecipe: "Logga recept",
+    recipeLogTitle: "Logga recept som måltid",
+    recipeLogDescription:
+      "Skicka ett sparat recept direkt till matloggen med skalning av portioner.",
+    servingsToLog: "Portioner att logga",
+    addToGroceryList: "Lägg till i inköpslista",
+    removeFromGroceryList: "Ta bort från inköpslista",
+    groceryList: "Inköpslista",
+    groceryListDescription:
+      "Välj recept så grupperar Foodie ingredienserna i en lista.",
+    copyGroceryList: "Kopiera inköpslista",
+    noGroceriesSelected:
+      "Välj ett eller flera recept för att skapa en inköpslista.",
+    plannedRecipes: "Planerade recept",
     createRecipe: "Skapa recept",
     editRecipe: "Redigera recept",
     deleteRecipe: "Ta bort recept",
@@ -334,6 +558,8 @@ export const translations: Record<AppLanguage, Translation> = {
     servings: "Portioner",
     caloriesPerServing: "Kalorier per portion",
     proteinPerServing: "Protein per portion",
+    carbsPerServing: "Kolhydrater per portion",
+    fatPerServing: "Fett per portion",
     tags: "Taggar",
     ingredients: "Ingredienser",
     instructions: "Instruktioner",
@@ -352,10 +578,45 @@ export const translations: Record<AppLanguage, Translation> = {
     securityActions: "Säkerhetsåtgärder",
     revokeOtherSessions: "Återkalla övriga sessioner",
     ingredientNutrition: "Näringsvärden per ingrediens",
+    ingredientNutritionDescription:
+      "Näringsvärden per ingrediens är valfria. Används som reserv när värdena per portion ovan saknas, eller fyll i automatiskt via Livsmedelsverket-uppslagningen nedan.",
+    ingredientName: "Namn",
+    ingredientAmount: "Mängd",
+    ingredientUnit: "Enhet",
+    computedMacrosTitle: "Beräknat från ingredienser",
+    computedMacrosDescription:
+      "Live-summa baserad på ingrediensernas näringsvärden.",
+    computedMacrosTotal: "Totalt",
+    computedMacrosPerServing: "Per portion",
+    computedMacrosApply: "Använd som värden per portion",
+    autoFillButton: "Slå upp makros för alla ingredienser",
+    autoFillRunning: "Slår upp…",
+    autoFillUpdated: "uppdaterade",
+    autoFillSkipped: "hoppades över (okänd enhet eller saknat namn/mängd)",
+    autoFillFailed: "hittades inte",
     currentSession: "Nuvarande session",
     revokeSession: "Återkalla session",
     sessionRevoked: "Återkallad",
     activeUntil: "Aktiv till",
     lastUsed: "Senast använd",
+    nutritionLookupTitle: "Slå upp näringsvärden (Livsmedelsverket)",
+    nutritionLookupPlaceholder: "Sök livsmedel, t.ex. kycklingfilé",
+    nutritionLookupApply: "Använd makros",
+    nutritionLookupNoResults: "Inga träffar",
+    nutritionLookupSearching: "Söker...",
+    nutritionLookupSource: "Källa: Livsmedelsverket",
+    nutritionLookupGramsLabel: "Gram",
+    importRecipesTitle: "Importera recept",
+    importRecipesDescription:
+      "Sök på TheMealDB och spara matchande recept i ditt bibliotek.",
+    importRecipesPlaceholder: "t.ex. kycklinggryta",
+    importRecipesAction: "Importera",
+    importRecipesInProgress: "Importerar recept...",
+    importRecipesQueryRequired: "Skriv en sökterm innan du importerar.",
+    importRecipesNotConfigured:
+      "Receptimporten är inte konfigurerad på servern.",
+    importRecipesNoResults: "Inga recept importerades.",
+    importRecipesSuccess: (count) => `${count} recept importerade.`,
+    translateToSwedish: "Översätt till svenska",
   },
 };

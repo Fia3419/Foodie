@@ -3,6 +3,7 @@ using System.Text.Json;
 using Foodie.Api.Contracts;
 using Foodie.Api.Data;
 using Foodie.Api.Entities;
+using Foodie.Api.Infrastructure;
 using Foodie.Api.Localization;
 using Foodie.Api.Recipes;
 using Microsoft.AspNetCore.Authorization;
@@ -18,11 +19,19 @@ public sealed class RecipesController : ControllerBase
 {
     private readonly FoodieDbContext _dbContext;
     private readonly IApiTextLocalizer _localizer;
+    private readonly INutritionLookupService _nutritionLookup;
+    private readonly IRecipeImportService _recipeImport;
 
-    public RecipesController(FoodieDbContext dbContext, IApiTextLocalizer localizer)
+    public RecipesController(
+        FoodieDbContext dbContext,
+        IApiTextLocalizer localizer,
+        INutritionLookupService nutritionLookup,
+        IRecipeImportService recipeImport)
     {
         _dbContext = dbContext;
         _localizer = localizer;
+        _nutritionLookup = nutritionLookup;
+        _recipeImport = recipeImport;
     }
 
     [HttpGet]
@@ -54,6 +63,8 @@ public sealed class RecipesController : ControllerBase
             Servings = request.Servings,
             CaloriesPerServing = request.CaloriesPerServing,
             ProteinPerServing = request.ProteinPerServing,
+            CarbsPerServing = request.CarbsPerServing,
+            FatPerServing = request.FatPerServing,
             TagsJson = JsonSerializer.Serialize(request.Tags),
             IngredientsJson = RecipeSerialization.SerializeIngredients(request.Ingredients),
             Instructions = request.Instructions.Trim(),
@@ -82,6 +93,8 @@ public sealed class RecipesController : ControllerBase
         recipe.Servings = request.Servings;
         recipe.CaloriesPerServing = request.CaloriesPerServing;
         recipe.ProteinPerServing = request.ProteinPerServing;
+        recipe.CarbsPerServing = request.CarbsPerServing;
+        recipe.FatPerServing = request.FatPerServing;
         recipe.TagsJson = JsonSerializer.Serialize(request.Tags);
         recipe.IngredientsJson = RecipeSerialization.SerializeIngredients(request.Ingredients);
         recipe.Instructions = request.Instructions.Trim();
@@ -109,6 +122,121 @@ public sealed class RecipesController : ControllerBase
         return Ok(new ApiMessageDto(_localizer.Get(ApiTextKey.RecipeDeleted)));
     }
 
+    [HttpGet("nutrition/search")]
+    public async Task<ActionResult<IReadOnlyList<NutritionSearchResultDto>>> SearchNutrition(
+        [FromQuery] string query,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return Ok(Array.Empty<NutritionSearchResultDto>());
+        }
+
+        var results = await _nutritionLookup.SearchAsync(query.Trim(), cancellationToken);
+        IReadOnlyList<NutritionSearchResultDto> response = results
+            .Select(item => new NutritionSearchResultDto(item.FoodNumber, item.Name))
+            .ToList();
+
+        return Ok(response);
+    }
+
+    [HttpGet("nutrition/{foodNumber:int}")]
+    public async Task<ActionResult<NutritionMacrosDto>> GetNutrition(
+        int foodNumber,
+        [FromQuery] int grams,
+        CancellationToken cancellationToken)
+    {
+        if (grams <= 0 || grams > 5000)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(ApiTextKey.ValidationFailedDetail)));
+        }
+
+        var macros = await _nutritionLookup.GetMacrosAsync(foodNumber, cancellationToken);
+
+        if (macros is null)
+        {
+            return NotFound();
+        }
+
+        var factor = grams / 100m;
+        return Ok(new NutritionMacrosDto(
+            macros.Name,
+            macros.FoodNumber,
+            grams,
+            (int)Math.Round(macros.CaloriesPerHundredGrams * factor, MidpointRounding.AwayFromZero),
+            (int)Math.Round(macros.ProteinPerHundredGrams * factor, MidpointRounding.AwayFromZero),
+            (int)Math.Round(macros.CarbsPerHundredGrams * factor, MidpointRounding.AwayFromZero),
+            (int)Math.Round(macros.FatPerHundredGrams * factor, MidpointRounding.AwayFromZero)));
+    }
+
+    [HttpPost("import")]
+    public async Task<ActionResult<IReadOnlyList<RecipeSummaryDto>>> ImportRecipes(
+        ImportRecipesRequestDto request,
+        CancellationToken cancellationToken)
+    {
+        if (!_recipeImport.IsConfigured)
+        {
+            return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                new ApiMessageDto("Recipe import service is not configured."));
+        }
+
+        var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var imported = await _recipeImport.SearchAsync(
+            request.Query.Trim(),
+            request.Count,
+            request.TranslateToSwedish,
+            cancellationToken);
+
+        if (imported.Count == 0)
+        {
+            return Ok(Array.Empty<RecipeSummaryDto>());
+        }
+
+        var savedRecipes = CreateImportedRecipes(imported, userId);
+
+        if (savedRecipes.Count == 0)
+        {
+            return Ok(Array.Empty<RecipeSummaryDto>());
+        }
+
+        await _dbContext.Recipes.AddRangeAsync(savedRecipes, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        IReadOnlyList<RecipeSummaryDto> response = savedRecipes
+            .Select(recipe => ToDto(recipe, userId))
+            .ToList();
+
+        return Ok(response);
+    }
+
+    private static IReadOnlyList<Recipe> CreateImportedRecipes(IReadOnlyList<ImportedRecipe> imported, Guid userId)
+    {
+        var now = DateTime.UtcNow;
+
+        return imported
+            .Where(item => !string.IsNullOrWhiteSpace(item.Name))
+            .Select(item => new Recipe
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Name = Truncate(item.Name, 120),
+                Servings = item.Servings,
+                CaloriesPerServing = item.CaloriesPerServing,
+                ProteinPerServing = item.ProteinPerServing,
+                CarbsPerServing = item.CarbsPerServing,
+                FatPerServing = item.FatPerServing,
+                TagsJson = JsonSerializer.Serialize(item.Tags),
+                IngredientsJson = RecipeSerialization.SerializeIngredients(item.Ingredients),
+                Instructions = Truncate(item.Instructions, 5000),
+                CreatedAtUtc = now,
+                UpdatedAtUtc = now,
+            })
+            .ToList();
+    }
+
+    private static string Truncate(string value, int maxLength)
+        => value.Length <= maxLength ? value : value[..maxLength];
+
     private static RecipeSummaryDto ToDto(Recipe recipe, Guid userId)
     {
         return new RecipeSummaryDto(
@@ -117,6 +245,8 @@ public sealed class RecipesController : ControllerBase
             recipe.Servings,
             recipe.CaloriesPerServing,
             recipe.ProteinPerServing,
+            recipe.CarbsPerServing,
+            recipe.FatPerServing,
             JsonSerializer.Deserialize<List<string>>(recipe.TagsJson) ?? [],
             RecipeSerialization.DeserializeIngredients(recipe.IngredientsJson),
             recipe.Instructions,

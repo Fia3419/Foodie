@@ -8,6 +8,8 @@ public sealed record RecipeSummaryDto(
     int Servings,
     int CaloriesPerServing,
     int ProteinPerServing,
+    int CarbsPerServing,
+    int FatPerServing,
     IReadOnlyList<string> Tags,
     IReadOnlyList<RecipeIngredientDto> Ingredients,
     string Instructions,
@@ -18,6 +20,13 @@ public sealed record UpsertRecipeRequestDto(
     [Range(1, 50)] int Servings,
     [Range(0, 10000)] int CaloriesPerServing,
     [Range(0, 1000)] int ProteinPerServing,
+    [Range(0, 1000)] int CarbsPerServing,
+    [Range(0, 1000)] int FatPerServing,
     IReadOnlyList<string> Tags,
     IReadOnlyList<RecipeIngredientDto> Ingredients,
     [StringLength(5000)] string Instructions);
+
+public sealed record ImportRecipesRequestDto(
+    [Required, StringLength(200, MinimumLength = 2)] string Query,
+    [Range(1, 20)] int Count = 5,
+    bool TranslateToSwedish = true);

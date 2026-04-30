@@ -4,6 +4,7 @@ using Foodie.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Foodie.Api.Migrations
 {
     [DbContext(typeof(FoodieDbContext))]
-    partial class FoodieDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430200023_AddRecipeCarbsAndFatPerServing")]
+    partial class AddRecipeCarbsAndFatPerServing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

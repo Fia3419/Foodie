@@ -11,6 +11,12 @@ import { readStoredLanguage } from "../i18n/languageStorage";
 
 let activeRefreshRequest: Promise<AuthSession | null> | null = null;
 
+interface NavigatorWithUserAgentData extends Navigator {
+  userAgentData?: {
+    platform?: string;
+  };
+}
+
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
 export const refreshAuthSessionIfNeeded = async (
@@ -71,8 +77,9 @@ export const refreshAuthSessionIfNeeded = async (
 };
 
 export const getDeviceNameHeader = () => {
+  const navigatorWithUserAgentData = navigator as NavigatorWithUserAgentData;
   const platform =
-    navigator.userAgentData?.platform ??
+    navigatorWithUserAgentData.userAgentData?.platform ??
     navigator.platform ??
     "Unknown platform";
   return `Foodie on ${platform}`;

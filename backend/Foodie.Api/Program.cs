@@ -5,6 +5,7 @@ using Foodie.Api.Auth;
 using Foodie.Api.Data;
 using Foodie.Api.Entities;
 using Foodie.Api.Localization;
+using Foodie.Api.Infrastructure;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,23 @@ builder.Services.AddDbContext<FoodieDbContext>((serviceProvider, options) =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IPasswordHasher<FoodieUser>, PasswordHasher<FoodieUser>>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient<IBarcodeLookupService, OpenFoodFactsBarcodeLookupService>(client =>
+{
+    client.BaseAddress = new Uri("https://world.openfoodfacts.org/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("FoodiePwa/0.0.0");
+});
+builder.Services.AddHttpClient<INutritionLookupService, LivsmedelsverketNutritionLookupService>(client =>
+{
+    client.BaseAddress = new Uri("https://dataportal.livsmedelsverket.se/livsmedel/api/v1/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("FoodiePwa/0.0.0");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+});
+builder.Services.AddHttpClient<IRecipeImportService, TheMealDbRecipeImportService>(client =>
+{
+    client.BaseAddress = new Uri("https://www.themealdb.com/");
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("FoodiePwa/0.0.0");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+});
 builder.Services.AddLocalization();
 builder.Services.AddSingleton<IApiTextLocalizer, ApiTextLocalizer>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>

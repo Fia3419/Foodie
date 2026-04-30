@@ -11,5 +11,11 @@ export const getLocalTimeInputValue = (date = new Date()) => {
   return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
 };
 
+export const shiftLocalDateInputValue = (value: string, offsetDays: number) => {
+  const date = new Date(`${value}T00:00:00`);
+  date.setDate(date.getDate() + offsetDays);
+  return getLocalDateInputValue(date);
+};
+
 export const getTimeZoneOffsetHeaderValue = () =>
   `${new Date().getTimezoneOffset()}`;

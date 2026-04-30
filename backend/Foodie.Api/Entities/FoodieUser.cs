@@ -20,5 +20,7 @@ public sealed class FoodieUser
 
     public List<Recipe> Recipes { get; set; } = [];
 
+    public List<SavedFood> SavedFoods { get; set; } = [];
+
     public List<RefreshToken> RefreshTokens { get; set; } = [];
 }

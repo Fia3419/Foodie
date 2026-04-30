@@ -14,6 +14,10 @@ public sealed class Recipe
 
     public int ProteinPerServing { get; set; }
 
+    public int CarbsPerServing { get; set; }
+
+    public int FatPerServing { get; set; }
+
     public string TagsJson { get; set; } = "[]";
 
     public string IngredientsJson { get; set; } = "[]";

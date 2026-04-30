@@ -11,6 +11,10 @@ export default defineConfig({
         __APP_VERSION__: JSON.stringify(buildVersion),
     },
     plugins: [plugin()],
+    test: {
+        environment: 'jsdom',
+        setupFiles: './src/test/setup.ts',
+    },
     server: {
         port: 59530,
         proxy: {

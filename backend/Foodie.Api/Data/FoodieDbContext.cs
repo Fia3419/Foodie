@@ -18,6 +18,8 @@ public sealed class FoodieDbContext : DbContext
 
     public DbSet<Recipe> Recipes => Set<Recipe>();
 
+    public DbSet<SavedFood> SavedFoods => Set<SavedFood>();
+
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -75,6 +77,24 @@ public sealed class FoodieDbContext : DbContext
                 .WithMany(user => user.Recipes)
                 .HasForeignKey(recipe => recipe.UserId)
                 .IsRequired(false);
+        });
+
+        modelBuilder.Entity<SavedFood>(entity =>
+        {
+            entity.Property(savedFood => savedFood.Kind).HasMaxLength(20);
+            entity.Property(savedFood => savedFood.Name).HasMaxLength(200);
+            entity.Property(savedFood => savedFood.MealName).HasMaxLength(50);
+            entity.Property(savedFood => savedFood.Barcode).HasMaxLength(64);
+
+            entity.HasOne(savedFood => savedFood.User)
+                .WithMany(user => user.SavedFoods)
+                .HasForeignKey(savedFood => savedFood.UserId);
+
+            entity.HasIndex(savedFood => new { savedFood.UserId, savedFood.Kind });
+
+            entity.HasIndex(savedFood => new { savedFood.UserId, savedFood.Barcode })
+                .IsUnique()
+                .HasFilter("[Barcode] IS NOT NULL");
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>

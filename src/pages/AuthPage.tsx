@@ -48,8 +48,9 @@ export const AuthPage = () => {
   const authError = loginMutation.error ?? registerMutation.error
 
   return (
-    <Container className="py-5">
-      <Row className="justify-content-center">
+    <main>
+      <Container className="py-5">
+        <Row className="justify-content-center">
         <Col xl={10}>
           <Card className="border-0 shadow-lg overflow-hidden foodie-surface">
             <Card.Body className="p-0">
@@ -78,18 +79,20 @@ export const AuthPage = () => {
                             <Form.Label>{t.email}</Form.Label>
                             <Form.Control
                               type="email"
+                              autoComplete="email"
+                              required
                               value={loginForm.email}
                               onChange={(event) => setLoginForm((currentValue) => ({ ...currentValue, email: event.target.value }))}
-                              required
                             />
                           </Form.Group>
                           <Form.Group controlId="login-password">
                             <Form.Label>{t.password}</Form.Label>
                             <Form.Control
                               type="password"
+                              autoComplete="current-password"
+                              required
                               value={loginForm.password}
                               onChange={(event) => setLoginForm((currentValue) => ({ ...currentValue, password: event.target.value }))}
-                              required
                             />
                           </Form.Group>
                           {authError ? <Alert variant="danger">{t.authError}</Alert> : null}
@@ -105,36 +108,36 @@ export const AuthPage = () => {
                           <Form.Group controlId="register-name">
                             <Form.Label>{t.name}</Form.Label>
                             <Form.Control
+                              autoComplete="name"
+                              required
                               value={registerForm.userName}
                               onChange={(event) => setRegisterForm((currentValue) => ({ ...currentValue, userName: event.target.value }))}
-                              required
                             />
                           </Form.Group>
                           <Form.Group controlId="register-email">
                             <Form.Label>{t.email}</Form.Label>
                             <Form.Control
                               type="email"
+                              autoComplete="email"
+                              required
                               value={registerForm.email}
                               onChange={(event) => setRegisterForm((currentValue) => ({ ...currentValue, email: event.target.value }))}
-                              required
                             />
                           </Form.Group>
                           <Form.Group controlId="register-password">
                             <Form.Label>{t.password}</Form.Label>
                             <Form.Control
                               type="password"
+                              autoComplete="new-password"
                               minLength={8}
+                              required
                               value={registerForm.password}
                               onChange={(event) => setRegisterForm((currentValue) => ({ ...currentValue, password: event.target.value }))}
-                              required
                             />
                           </Form.Group>
                           <Form.Group controlId="register-goal">
                             <Form.Label>{t.primaryGoal}</Form.Label>
-                            <select
-                              className="form-select"
-                              aria-label={t.primaryGoal}
-                              title={t.primaryGoal}
+                            <Form.Select
                               name="goalMode"
                               value={registerForm.goalMode}
                               onChange={(event) => setRegisterForm((currentValue) => ({ ...currentValue, goalMode: event.target.value as GoalMode }))}
@@ -142,7 +145,7 @@ export const AuthPage = () => {
                               <option value={GoalMode.GeneralHealth}>{t.generalHealth}</option>
                               <option value={GoalMode.GainStrength}>{t.gainStrength}</option>
                               <option value={GoalMode.LoseWeight}>{t.loseWeight}</option>
-                            </select>
+                            </Form.Select>
                           </Form.Group>
                           {authError ? <Alert variant="danger">{t.registerError}</Alert> : null}
                           <Button type="submit" variant="success" disabled={registerMutation.isPending}>
@@ -157,7 +160,8 @@ export const AuthPage = () => {
             </Card.Body>
           </Card>
         </Col>
-      </Row>
-    </Container>
+        </Row>
+      </Container>
+    </main>
   )
 }

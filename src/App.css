@@ -64,3 +64,27 @@
   width: auto;
   min-width: 8rem;
 }
+
+.foodie-skip-link {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2000;
+  background: #1f6f5f;
+  color: #fff;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.foodie-skip-link:focus,
+.foodie-skip-link:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+main:focus,
+main:focus-visible {
+  outline: none;
+}

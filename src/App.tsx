@@ -29,8 +29,9 @@ function App() {
 
   if (!isReady) {
     return (
-      <div className="app-shell d-flex align-items-center justify-content-center">
+      <div className="app-shell d-flex align-items-center justify-content-center" role="status" aria-live="polite">
         <Spinner animation="border" variant="success" />
+        <span className="visually-hidden">{t.dashboardLoading}</span>
       </div>
     )
   }
@@ -41,41 +42,54 @@ function App() {
 
   return (
     <div className="app-shell">
-      <Navbar expand="lg" className="foodie-navbar py-3" expanded={expanded}>
-        <Container>
-          <Navbar.Brand className="fw-semibold text-dark">{t.appName}</Navbar.Brand>
-          <Navbar.Toggle aria-controls="foodie-navigation" onClick={() => setExpanded((value) => !value)} />
-          <Navbar.Collapse id="foodie-navigation">
-            <Nav className="ms-auto gap-lg-2">
-              {navigation.map((item) => (
-                <Nav.Link
-                  as={NavLink}
-                  to={item.to}
-                  key={item.to}
-                  end={item.to === '/'}
-                  onClick={() => setExpanded(false)}
+      <a className="visually-hidden-focusable foodie-skip-link" href="#main-content">
+        {t.skipToContent}
+      </a>
+      <header>
+        <Navbar expand="lg" className="foodie-navbar py-3" expanded={expanded}>
+          <Container>
+            <Navbar.Brand className="fw-semibold text-dark" as="span">{t.appName}</Navbar.Brand>
+            <Navbar.Toggle aria-controls="foodie-navigation" aria-label={t.primaryNavigationLabel} onClick={() => setExpanded((value) => !value)} />
+            <Navbar.Collapse id="foodie-navigation">
+              <Nav as="ul" className="ms-auto gap-lg-2" aria-label={t.primaryNavigationLabel}>
+                {navigation.map((item) => (
+                  <Nav.Item as="li" key={item.to}>
+                    <Nav.Link
+                      as={NavLink}
+                      to={item.to}
+                      end={item.to === '/'}
+                      onClick={() => setExpanded(false)}
+                    >
+                      {item.label}
+                    </Nav.Link>
+                  </Nav.Item>
+                ))}
+              </Nav>
+              <Stack direction="horizontal" gap={2} className="ms-lg-3 align-items-center" aria-label={t.userMenuLabel}>
+                <LanguageSelect className="form-select form-select-sm foodie-language-select" />
+                <Badge bg="light" text="dark" pill>
+                  <span className="visually-hidden">{t.name}: </span>
+                  {authSession.userName}
+                </Badge>
+                <Badge
+                  bg={queuedActions > 0 ? 'warning' : 'success'}
+                  pill
+                  role="status"
+                  aria-live="polite"
+                  aria-label={t.syncStatusBadgeLabel}
                 >
-                  {item.label}
-                </Nav.Link>
-              ))}
-            </Nav>
-            <Stack direction="horizontal" gap={2} className="ms-lg-3 align-items-center">
-              <LanguageSelect className="form-select form-select-sm foodie-language-select" />
-              <Badge bg="light" text="dark" pill>
-                {authSession.userName}
-              </Badge>
-              <Badge bg={queuedActions > 0 ? 'warning' : 'success'} pill>
-                {queuedActions > 0 ? t.queued(queuedActions) : t.synced}
-              </Badge>
-              <Button variant="outline-dark" size="sm" onClick={logout} disabled={isPending}>
-                {t.logout}
-              </Button>
-            </Stack>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
+                  {queuedActions > 0 ? t.queued(queuedActions) : t.synced}
+                </Badge>
+                <Button variant="outline-dark" size="sm" onClick={logout} disabled={isPending}>
+                  {t.logout}
+                </Button>
+              </Stack>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
+      </header>
 
-      <main className="pb-5">
+      <main id="main-content" className="pb-5" tabIndex={-1}>
         <Container className="py-4 py-lg-5">
           <Routes>
             <Route path="/" element={<DashboardPage />} />

@@ -954,7 +954,7 @@ export const RecipesPage = () => {
                 onChange={(event) => setRecipeSearch(event.target.value)}
               />
               {recipeSearch ? (
-                <Button variant="outline-secondary" type="button" onClick={() => setRecipeSearch('')} aria-label="Clear search">
+                <Button variant="outline-secondary" type="button" onClick={() => setRecipeSearch('')} aria-label={t.clearSearch}>
                   &times;
                 </Button>
               ) : null}

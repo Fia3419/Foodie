@@ -207,6 +207,11 @@ export interface Translation {
   syncStatusOffline: string;
   syncStatusPending: (count: number) => string;
   syncStatusSynced: string;
+  skipToContent: string;
+  primaryNavigationLabel: string;
+  userMenuLabel: string;
+  clearSearch: string;
+  syncStatusBadgeLabel: string;
 }
 
 export const translations: Record<AppLanguage, Translation> = {
@@ -439,6 +444,11 @@ export const translations: Record<AppLanguage, Translation> = {
     syncStatusPending: (count) =>
       `${count} change${count === 1 ? "" : "s"} waiting to sync`,
     syncStatusSynced: "All changes saved to the server.",
+    skipToContent: "Skip to main content",
+    primaryNavigationLabel: "Primary",
+    userMenuLabel: "Account and sync status",
+    clearSearch: "Clear search",
+    syncStatusBadgeLabel: "Sync status",
   },
   sv: {
     appName: "Foodie",
@@ -671,5 +681,10 @@ export const translations: Record<AppLanguage, Translation> = {
     syncStatusPending: (count) =>
       `${count} ändring${count === 1 ? "" : "ar"} väntar på synk`,
     syncStatusSynced: "Alla ändringar är sparade på servern.",
+    skipToContent: "Hoppa till huvudinnehållet",
+    primaryNavigationLabel: "Huvudmeny",
+    userMenuLabel: "Konto och synkstatus",
+    clearSearch: "Rensa sökning",
+    syncStatusBadgeLabel: "Synkstatus",
   },
 };

@@ -59,6 +59,7 @@ Auth/
  IssuedSession.cs
  ITokenService.cs
  JwtOptions.cs
+ PasswordSecurity.cs
  TokenPair.cs
  TokenService.cs
 Contracts/
@@ -88,6 +89,7 @@ Data/
 Entities/
  FoodieUser.cs
  MealLogEntry.cs
+ PasswordResetToken.cs
  Recipe.cs
  RefreshToken.cs
  SavedFood.cs
@@ -117,6 +119,8 @@ Migrations/
  20260430144935_SyncModelChanges.Designer.cs
  20260430200023_AddRecipeCarbsAndFatPerServing.cs
  20260430200023_AddRecipeCarbsAndFatPerServing.Designer.cs
+ 20260502193000_AddPasswordResetTokensAndPasswordManagement.cs
+ 20260502193000_AddPasswordResetTokensAndPasswordManagement.Designer.cs
  FoodieDbContextModelSnapshot.cs
 obj/Debug/net10.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs

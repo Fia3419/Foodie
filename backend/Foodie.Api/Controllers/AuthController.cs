@@ -4,6 +4,7 @@ using Foodie.Api.Data;
 using Foodie.Api.Entities;
 using Foodie.Api.Localization;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,20 @@ namespace Foodie.Api.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly FoodieDbContext _dbContext;
+    private readonly IHostEnvironment _hostEnvironment;
     private readonly IApiTextLocalizer _localizer;
     private readonly IPasswordHasher<FoodieUser> _passwordHasher;
     private readonly ITokenService _tokenService;
 
     public AuthController(
         FoodieDbContext dbContext,
+        IHostEnvironment hostEnvironment,
         IApiTextLocalizer localizer,
         IPasswordHasher<FoodieUser> passwordHasher,
         ITokenService tokenService)
     {
         _dbContext = dbContext;
+        _hostEnvironment = hostEnvironment;
         _localizer = localizer;
         _passwordHasher = passwordHasher;
         _tokenService = tokenService;
@@ -36,6 +40,12 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequestDto request, CancellationToken cancellationToken)
     {
         var email = request.Email.Trim().ToLowerInvariant();
+
+        var passwordValidationError = PasswordSecurity.ValidatePassword(request.Password);
+        if (passwordValidationError is not null)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(passwordValidationError.Value)));
+        }
 
         if (await _dbContext.Users.AnyAsync(user => user.Email == email, cancellationToken))
         {
@@ -69,6 +79,7 @@ public sealed class AuthController : ControllerBase
 
         if (user is null)
         {
+            await DelayFailedLoginAsync(cancellationToken);
             return Unauthorized(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidCredentials)));
         }
 
@@ -76,13 +87,104 @@ public sealed class AuthController : ControllerBase
 
         if (verificationResult == PasswordVerificationResult.Failed)
         {
+            await DelayFailedLoginAsync(cancellationToken);
             return Unauthorized(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidCredentials)));
+        }
+
+        if (verificationResult == PasswordVerificationResult.SuccessRehashNeeded)
+        {
+            user.PasswordHash = _passwordHasher.HashPassword(user, request.Password);
         }
 
         var issuedSession = CreateAndTrackRefreshToken(user, null, GetDeviceName());
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return Ok(ToAuthResponse(user, issuedSession));
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<ActionResult<ForgotPasswordResponseDto>> ForgotPassword(ForgotPasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        var email = request.Email.Trim().ToLowerInvariant();
+        var previewResetCode = (string?)null;
+        var user = await _dbContext.Users.SingleOrDefaultAsync(entity => entity.Email == email, cancellationToken);
+
+        if (user is not null)
+        {
+            var activeTokens = await _dbContext.PasswordResetTokens
+                .Where(token => token.UserId == user.Id && token.UsedAtUtc == null)
+                .ToListAsync(cancellationToken);
+
+            foreach (var activeToken in activeTokens)
+            {
+                activeToken.UsedAtUtc = DateTime.UtcNow;
+            }
+
+            var resetCode = PasswordSecurity.CreateResetCode();
+            previewResetCode = _hostEnvironment.IsDevelopment() ? resetCode : null;
+
+            _dbContext.PasswordResetTokens.Add(new PasswordResetToken
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                TokenHash = PasswordSecurity.HashResetCode(resetCode),
+                CreatedAtUtc = DateTime.UtcNow,
+                ExpiresAtUtc = DateTime.UtcNow.AddMinutes(15)
+            });
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        return Ok(new ForgotPasswordResponseDto(_localizer.Get(ApiTextKey.PasswordResetRequested), previewResetCode));
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<ActionResult<ApiMessageDto>> ResetPassword(ResetPasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        var passwordValidationError = PasswordSecurity.ValidatePassword(request.NewPassword);
+        if (passwordValidationError is not null)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(passwordValidationError.Value)));
+        }
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var user = await _dbContext.Users.SingleOrDefaultAsync(entity => entity.Email == email, cancellationToken);
+        if (user is null)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidPasswordResetCode)));
+        }
+
+        var newPasswordMatchesOld = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.NewPassword);
+        if (newPasswordMatchesOld != PasswordVerificationResult.Failed)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(ApiTextKey.PasswordMustBeDifferent)));
+        }
+
+        var tokenHash = PasswordSecurity.HashResetCode(request.ResetCode);
+        var passwordResetToken = await _dbContext.PasswordResetTokens
+            .SingleOrDefaultAsync(token => token.UserId == user.Id && token.TokenHash == tokenHash, cancellationToken);
+
+        if (passwordResetToken is null || passwordResetToken.UsedAtUtc is not null || passwordResetToken.ExpiresAtUtc <= DateTime.UtcNow)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidPasswordResetCode)));
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, request.NewPassword);
+        passwordResetToken.UsedAtUtc = DateTime.UtcNow;
+
+        var activeResetTokens = await _dbContext.PasswordResetTokens
+            .Where(token => token.UserId == user.Id && token.UsedAtUtc == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var activeToken in activeResetTokens)
+        {
+            activeToken.UsedAtUtc = DateTime.UtcNow;
+        }
+
+        await RevokeActiveRefreshTokensAsync(user.Id, exceptSessionId: null, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(new ApiMessageDto(_localizer.Get(ApiTextKey.PasswordResetCompleted)));
     }
 
     [HttpPost("refresh")]
@@ -123,6 +225,49 @@ public sealed class AuthController : ControllerBase
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<ActionResult<ApiMessageDto>> ChangePassword(ChangePasswordRequestDto request, CancellationToken cancellationToken)
+    {
+        var passwordValidationError = PasswordSecurity.ValidatePassword(request.NewPassword);
+        if (passwordValidationError is not null)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(passwordValidationError.Value)));
+        }
+
+        var userId = GetUserId();
+        var currentSessionId = Guid.Parse(User.FindFirst("session_id")?.Value ?? Guid.Empty.ToString());
+        var user = await _dbContext.Users.SingleAsync(entity => entity.Id == userId, cancellationToken);
+        var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword);
+
+        if (verificationResult == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidCredentials)));
+        }
+
+        var newPasswordMatchesOld = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.NewPassword);
+        if (newPasswordMatchesOld != PasswordVerificationResult.Failed)
+        {
+            return BadRequest(new ApiMessageDto(_localizer.Get(ApiTextKey.PasswordMustBeDifferent)));
+        }
+
+        user.PasswordHash = _passwordHasher.HashPassword(user, request.NewPassword);
+
+        var activeResetTokens = await _dbContext.PasswordResetTokens
+            .Where(token => token.UserId == user.Id && token.UsedAtUtc == null)
+            .ToListAsync(cancellationToken);
+
+        foreach (var activeToken in activeResetTokens)
+        {
+            activeToken.UsedAtUtc = DateTime.UtcNow;
+        }
+
+        await RevokeActiveRefreshTokensAsync(user.Id, currentSessionId, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return Ok(new ApiMessageDto(_localizer.Get(ApiTextKey.PasswordChanged)));
     }
 
     private Guid GetUserId()
@@ -254,6 +399,25 @@ public sealed class AuthController : ControllerBase
         }
 
         return "Unknown device";
+    }
+
+    private async Task RevokeActiveRefreshTokensAsync(Guid userId, Guid? exceptSessionId, CancellationToken cancellationToken)
+    {
+        var refreshTokens = await _dbContext.RefreshTokens
+            .Where(token => token.UserId == userId && token.RevokedAtUtc == null)
+            .Where(token => exceptSessionId == null || token.SessionId != exceptSessionId)
+            .ToListAsync(cancellationToken);
+
+        foreach (var refreshToken in refreshTokens)
+        {
+            refreshToken.RevokedAtUtc = DateTime.UtcNow;
+        }
+    }
+
+    private static Task DelayFailedLoginAsync(CancellationToken cancellationToken)
+    {
+        var jitter = RandomNumberGenerator.GetInt32(140, 280);
+        return Task.Delay(jitter, cancellationToken);
     }
 
     private void SeedStarterData(Guid userId)

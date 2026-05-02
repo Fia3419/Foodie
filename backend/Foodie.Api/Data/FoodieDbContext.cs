@@ -22,6 +22,8 @@ public sealed class FoodieDbContext : DbContext
 
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+    public DbSet<PasswordResetToken> PasswordResetTokens => Set<PasswordResetToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<FoodieUser>(entity =>
@@ -111,6 +113,20 @@ public sealed class FoodieDbContext : DbContext
                 .IsUnique();
 
             entity.HasIndex(token => token.SessionId);
+        });
+
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.Property(token => token.TokenHash).HasMaxLength(64);
+
+            entity.HasOne(token => token.User)
+                .WithMany(user => user.PasswordResetTokens)
+                .HasForeignKey(token => token.UserId);
+
+            entity.HasIndex(token => token.TokenHash)
+                .IsUnique();
+
+            entity.HasIndex(token => new { token.UserId, token.ExpiresAtUtc });
         });
     }
 }

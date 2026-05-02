@@ -30,6 +30,30 @@ export interface RegisterRequest {
   goalMode: GoalMode;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+  previewResetCode: string | null;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  resetCode: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ApiMessage {
+  message: string;
+}
+
 export interface GoalOption {
   mode: GoalMode;
   label: string;

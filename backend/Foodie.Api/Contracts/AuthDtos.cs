@@ -5,7 +5,7 @@ namespace Foodie.Api.Contracts;
 public sealed record RegisterRequestDto(
     [Required, StringLength(100, MinimumLength = 2)] string UserName,
     [Required, EmailAddress] string Email,
-    [Required, MinLength(8)] string Password,
+    [Required, MinLength(12)] string Password,
     [Required] string GoalMode);
 
 public sealed record LoginRequestDto(
@@ -15,6 +15,19 @@ public sealed record LoginRequestDto(
 public sealed record RefreshRequestDto([Required] string RefreshToken);
 
 public sealed record LogoutRequestDto(Guid SessionId);
+
+public sealed record ForgotPasswordRequestDto([Required, EmailAddress] string Email);
+
+public sealed record ForgotPasswordResponseDto(string Message, string? PreviewResetCode);
+
+public sealed record ResetPasswordRequestDto(
+    [Required, EmailAddress] string Email,
+    [Required] string ResetCode,
+    [Required, MinLength(12)] string NewPassword);
+
+public sealed record ChangePasswordRequestDto(
+    [Required] string CurrentPassword,
+    [Required, MinLength(12)] string NewPassword);
 
 public sealed record SessionSummaryDto(
     Guid SessionId,

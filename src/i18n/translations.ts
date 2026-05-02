@@ -30,6 +30,30 @@ export interface Translation {
   authBenefitThree: string;
   authError: string;
   registerError: string;
+  forgotPassword: string;
+  forgotPasswordDescription: string;
+  requestPasswordReset: string;
+  requestingPasswordReset: string;
+  resetPassword: string;
+  resetPasswordDescription: string;
+  resetCode: string;
+  resetCodeDescription: string;
+  newPassword: string;
+  confirmPassword: string;
+  changePassword: string;
+  changingPassword: string;
+  passwordRulesTitle: string;
+  passwordRuleLength: string;
+  passwordRuleUppercase: string;
+  passwordRuleLowercase: string;
+  passwordRuleDigit: string;
+  passwordRuleSpecial: string;
+  passwordMismatch: string;
+  passwordResetRequestSuccess: string;
+  passwordResetSuccess: string;
+  passwordChangeSuccess: string;
+  currentPassword: string;
+  developmentResetCode: string;
   language: string;
   dashboardLoading: string;
   dashboardUnavailable: string;
@@ -237,16 +261,45 @@ export const translations: Record<AppLanguage, Translation> = {
     signingIn: "Signing in...",
     createAccount: "Create account",
     creatingAccount: "Creating account...",
-    authHeroBadge: "PWA health tracker",
+    authHeroBadge: "Health tracker app",
     authHeroTitle:
       "Track nutrition with a real account and resilient offline logging.",
     authHeroDescription:
-      "Makrobalans stores your meals, weight trend, goals, and recipes in a persistent .NET 10 API backed by SQL Server and queues changes locally when you lose connection.",
+      "Makrobalans stores your meals, weight trend, goals, recipes and queues changes locally when you lose connection.",
     authBenefitOne: "Refresh-token based account session",
     authBenefitTwo: "SQL Server-backed food and weight history",
     authBenefitThree: "IndexedDB queue for offline writes",
     authError: "Authentication failed. Check your credentials and try again.",
     registerError: "Registration failed. Try a different email or password.",
+    forgotPassword: "Forgot password",
+    forgotPasswordDescription:
+      "Request a one-time reset code and then set a new password.",
+    requestPasswordReset: "Request reset code",
+    requestingPasswordReset: "Requesting reset code...",
+    resetPassword: "Reset password",
+    resetPasswordDescription:
+      "Enter your email, reset code and a new strong password.",
+    resetCode: "Reset code",
+    resetCodeDescription:
+      "The code is valid for 15 minutes and can only be used once.",
+    newPassword: "New password",
+    confirmPassword: "Confirm password",
+    changePassword: "Change password",
+    changingPassword: "Changing password...",
+    passwordRulesTitle: "Password requirements",
+    passwordRuleLength: "At least 12 characters",
+    passwordRuleUppercase: "At least one uppercase letter",
+    passwordRuleLowercase: "At least one lowercase letter",
+    passwordRuleDigit: "At least one number",
+    passwordRuleSpecial: "At least one special character",
+    passwordMismatch: "Passwords do not match.",
+    passwordResetRequestSuccess:
+      "If the account exists, a reset code has been issued.",
+    passwordResetSuccess:
+      "Password reset complete. Sign in with your new password.",
+    passwordChangeSuccess: "Password changed successfully.",
+    currentPassword: "Current password",
+    developmentResetCode: "Development reset code",
     language: "Language",
     dashboardLoading: "Loading your dashboard...",
     dashboardUnavailable: "Dashboard data is unavailable right now.",
@@ -331,7 +384,7 @@ export const translations: Record<AppLanguage, Translation> = {
     progressLoading: "Loading progress insights...",
     progressUnavailable: "Progress data is unavailable right now.",
     progress: "Progress",
-    progressTitle: "Consistency is trending in the right direction",
+    progressTitle: "Your progress is trending in the right direction",
     progressDescription:
       "Use body-weight checkpoints and weekly adherence to decide whether to hold, push, or reduce intake.",
     weightTrend: "Weight trend",
@@ -472,10 +525,10 @@ export const translations: Record<AppLanguage, Translation> = {
     signingIn: "Loggar in...",
     createAccount: "Skapa konto",
     creatingAccount: "Skapar konto...",
-    authHeroBadge: "PWA för hälsa",
+    authHeroBadge: "En app för din hälsa",
     authHeroTitle: "Följ din kost med riktigt konto och tålig offlinelogik.",
     authHeroDescription:
-      "Makrobalans sparar måltider, vikttrend, mål och recept i ett beständigt .NET 10-API med SQL Server och köar ändringar lokalt när uppkopplingen försvinner.",
+      "Makrobalans sparar måltider, vikttrend, mål, recept och köar ändringar lokalt när uppkopplingen försvinner.",
     authBenefitOne: "Kontosession med refresh token",
     authBenefitTwo: "SQL Server-lagrad mat- och vikthistorik",
     authBenefitThree: "IndexedDB-kö för offlineändringar",
@@ -483,6 +536,35 @@ export const translations: Record<AppLanguage, Translation> = {
       "Inloggningen misslyckades. Kontrollera dina uppgifter och försök igen.",
     registerError:
       "Registreringen misslyckades. Prova en annan e-post eller ett annat lösenord.",
+    forgotPassword: "Glömt lösenord",
+    forgotPasswordDescription:
+      "Beställ en engångskod för återställning och ange sedan ett nytt lösenord.",
+    requestPasswordReset: "Beställ återställningskod",
+    requestingPasswordReset: "Beställer återställningskod...",
+    resetPassword: "Återställ lösenord",
+    resetPasswordDescription:
+      "Ange din e-post, återställningskod och ett nytt starkt lösenord.",
+    resetCode: "Återställningskod",
+    resetCodeDescription:
+      "Koden är giltig i 15 minuter och kan bara användas en gång.",
+    newPassword: "Nytt lösenord",
+    confirmPassword: "Bekräfta lösenord",
+    changePassword: "Byt lösenord",
+    changingPassword: "Byter lösenord...",
+    passwordRulesTitle: "Lösenordsregler",
+    passwordRuleLength: "Minst 12 tecken",
+    passwordRuleUppercase: "Minst en stor bokstav",
+    passwordRuleLowercase: "Minst en liten bokstav",
+    passwordRuleDigit: "Minst en siffra",
+    passwordRuleSpecial: "Minst ett specialtecken",
+    passwordMismatch: "Lösenorden matchar inte.",
+    passwordResetRequestSuccess:
+      "Om kontot finns har en återställningskod skapats.",
+    passwordResetSuccess:
+      "Lösenordet har återställts. Logga in med ditt nya lösenord.",
+    passwordChangeSuccess: "Lösenordet har uppdaterats.",
+    currentPassword: "Nuvarande lösenord",
+    developmentResetCode: "Återställningskod för utveckling",
     language: "Språk",
     dashboardLoading: "Laddar din översikt...",
     dashboardUnavailable: "Översiktsdata är inte tillgänglig just nu.",
@@ -567,7 +649,7 @@ export const translations: Record<AppLanguage, Translation> = {
     progressLoading: "Laddar framsteg...",
     progressUnavailable: "Framstegsdata är inte tillgänglig just nu.",
     progress: "Framsteg",
-    progressTitle: "Din konsekvens utvecklas åt rätt håll",
+    progressTitle: "Din utveckling går åt rätt håll",
     progressDescription:
       "Använd viktkontroller och veckoträffsäkerhet för att avgöra om du ska ligga kvar, öka eller minska intaget.",
     weightTrend: "Vikttrend",

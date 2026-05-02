@@ -1,15 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { httpClient } from "./httpClient";
 import {
+  ApiMessage,
   AuthSession,
+  ChangePasswordRequest,
   CreateMealLogEntryRequest,
   CreateWeightEntryRequest,
   DailyLog,
   DashboardSummary,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   GoalMode,
   LoginRequest,
   MealLogItem,
   RecipeSummary,
+  ResetPasswordRequest,
   RegisterRequest,
   RecipeIngredient,
   NutritionMacros,
@@ -288,6 +293,30 @@ export const useRegisterMutation = () =>
           })
         ).data,
       ),
+  });
+
+export const useForgotPasswordMutation = () =>
+  useMutation({
+    mutationFn: async (request: ForgotPasswordRequest) =>
+      (
+        await httpClient.post<ForgotPasswordResponse>(
+          "/auth/forgot-password",
+          request,
+        )
+      ).data,
+  });
+
+export const useResetPasswordMutation = () =>
+  useMutation({
+    mutationFn: async (request: ResetPasswordRequest) =>
+      (await httpClient.post<ApiMessage>("/auth/reset-password", request)).data,
+  });
+
+export const useChangePasswordMutation = () =>
+  useMutation({
+    mutationFn: async (request: ChangePasswordRequest) =>
+      (await httpClient.post<ApiMessage>("/auth/change-password", request))
+        .data,
   });
 
 export const useLogoutMutation = () =>

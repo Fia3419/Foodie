@@ -347,9 +347,6 @@ export const FoodLogPage = () => {
               <h1 className="h2 text-dark mb-2">{t.mealsAndMacros}</h1>
               <p className="text-secondary mb-0">{t.logDescription}</p>
             </div>
-            <Badge bg={isOnline ? 'success' : 'warning'} className="align-self-start align-self-lg-center">
-              {isOnline ? t.onlineWrites : t.offlineWrites}
-            </Badge>
           </Card.Body>
         </Card>
 

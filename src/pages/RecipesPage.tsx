@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEventHandler, type SyntheticEvent } from 'react'
-import { Alert, Badge, Button, Card, Col, Form, Row, Stack } from 'react-bootstrap'
+import { Accordion, Alert, Badge, Button, Card, Col, Form, InputGroup, Row, Stack } from 'react-bootstrap'
 import { fetchNutritionMacros, fetchNutritionSearch, useCreateMealLogMutation, useCreateRecipeMutation, useDeleteRecipeMutation, useImportRecipesMutation, useRecipes, useUpdateRecipeMutation } from '../api/foodieApi'
 import { NutritionMacros, NutritionSearchResult, RecipeIngredient, RecipeSummary, UpsertRecipeRequest } from '../types/models'
 import { useLanguageContext } from '../contexts/LanguageContext'
@@ -228,6 +228,7 @@ export const RecipesPage = () => {
   const [importMessage, setImportMessage] = useState<{ variant: 'success' | 'warning' | 'danger' | 'info'; text: string } | null>(null)
   const [autoFillRunning, setAutoFillRunning] = useState(false)
   const [autoFillMessage, setAutoFillMessage] = useState<{ variant: 'success' | 'warning' | 'danger' | 'info'; text: string } | null>(null)
+  const [recipeSearch, setRecipeSearch] = useState('')
 
   useEffect(() => {
     writePlannedRecipeIds(plannedRecipeIds)
@@ -578,6 +579,15 @@ export const RecipesPage = () => {
   const groceryListText = buildGroceryListText(groceryListItems)
   const formNutritionTotals = summarizeIngredientFormNutrition(formValues.ingredients)
   const formNutritionPerServing = calculatePerServingNutrition(formNutritionTotals, parseNumberInput(formValues.servings, 1))
+  const normalizedSearch = recipeSearch.trim().toLowerCase()
+  const filteredRecipes = normalizedSearch
+    ? recipesQuery.data.filter((recipe) => {
+        if (recipe.name.toLowerCase().includes(normalizedSearch)) return true
+        if (recipe.tags.some((tag) => tag.toLowerCase().includes(normalizedSearch))) return true
+        if (recipe.ingredients.some((ingredient) => ingredient.name.toLowerCase().includes(normalizedSearch))) return true
+        return false
+      })
+    : recipesQuery.data
 
   return (
     <Stack gap={4}>
@@ -923,47 +933,84 @@ export const RecipesPage = () => {
         </Card.Body>
       </Card>
 
-      <Row className="g-4">
-        {recipesQuery.data.map((recipe) => (
-          <Col md={6} xl={4} key={recipe.id}>
-            <Card className="border-0 shadow-sm h-100">
-              <Card.Body className="p-4 d-flex flex-column gap-3">
-                <div>
-                  <h2 className="h5 text-dark mb-2">{recipe.name}</h2>
-                  <p className="text-secondary mb-0">
-                    {(() => {
-                      const nutrition = summarizeRecipeNutrition(recipe)
-                      return `${nutrition.calories} kcal · P ${nutrition.protein}g · C ${nutrition.carbs}g · F ${nutrition.fat}g`
-                    })()}
-                  </p>
-                </div>
-                <div className="d-flex flex-wrap gap-2">
-                  <Badge bg={recipe.isOwnedByCurrentUser ? 'success' : 'light'} text={recipe.isOwnedByCurrentUser ? undefined : 'dark'}>
-                    {recipe.isOwnedByCurrentUser ? t.ownRecipe : t.libraryRecipe}
-                  </Badge>
-                  {recipe.tags.map((tag) => (
-                    <Badge bg="light" text="dark" key={tag}>
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <div className="text-secondary small">
-                  <strong>{t.ingredients}:</strong> {recipe.ingredients.map(formatIngredientSummary).join(', ')}
-                </div>
-                <div className="text-secondary small white-space-pre-line">{recipe.instructions}</div>
-                <div className="mt-auto text-secondary small">{recipe.servings} servings</div>
-                <div className="d-flex flex-wrap gap-2">
-                  <Button variant="outline-success" size="sm" onClick={() => handleSelectRecipeForLogging(recipe)}>{t.logRecipe}</Button>
-                  <Button variant={plannedRecipeIds.includes(recipe.id) ? 'success' : 'outline-secondary'} size="sm" onClick={() => togglePlannedRecipe(recipe.id)}>
-                    {plannedRecipeIds.includes(recipe.id) ? t.removeFromGroceryList : t.addToGroceryList}
-                  </Button>
-                  {recipe.isOwnedByCurrentUser ? <Button variant="outline-success" size="sm" onClick={() => applyRecipe(recipe)}>{t.editRecipe}</Button> : null}
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      <Card className="border-0 shadow-sm">
+        <Card.Body className="p-4 d-flex flex-column gap-3">
+          <div className="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-lg-center">
+            <div>
+              <h2 className="h4 text-dark mb-1">{t.recipeLibraryTitle}</h2>
+              <p className="text-secondary mb-0 small">
+                {t.recipeLibraryCount(filteredRecipes.length)}
+                {recipeSearch.trim() && filteredRecipes.length !== recipesQuery.data.length
+                  ? ` / ${recipesQuery.data.length}`
+                  : ''}
+              </p>
+            </div>
+            <InputGroup style={{ maxWidth: 400 }}>
+              <Form.Control
+                type="search"
+                value={recipeSearch}
+                placeholder={t.recipeLibrarySearchPlaceholder}
+                aria-label={t.recipeLibrarySearchPlaceholder}
+                onChange={(event) => setRecipeSearch(event.target.value)}
+              />
+              {recipeSearch ? (
+                <Button variant="outline-secondary" type="button" onClick={() => setRecipeSearch('')} aria-label="Clear search">
+                  &times;
+                </Button>
+              ) : null}
+            </InputGroup>
+          </div>
+          {filteredRecipes.length === 0 ? (
+            <Alert variant="light" className="mb-0">{t.noRecipesMatchSearch}</Alert>
+          ) : (
+            <Accordion alwaysOpen flush>
+              {filteredRecipes.map((recipe) => {
+                const nutrition = summarizeRecipeNutrition(recipe)
+                return (
+                  <Accordion.Item eventKey={recipe.id} key={recipe.id}>
+                    <Accordion.Header>
+                      <div className="d-flex flex-column flex-md-row gap-2 gap-md-3 align-items-md-center w-100 me-3">
+                        <span className="fw-semibold text-dark flex-grow-1">{recipe.name}</span>
+                        <span className="text-secondary small">
+                          {nutrition.calories} kcal &middot; P {nutrition.protein}g &middot; C {nutrition.carbs}g &middot; F {nutrition.fat}g
+                        </span>
+                        <div className="d-flex flex-wrap gap-1">
+                          <Badge bg={recipe.isOwnedByCurrentUser ? 'success' : 'light'} text={recipe.isOwnedByCurrentUser ? undefined : 'dark'}>
+                            {recipe.isOwnedByCurrentUser ? t.ownRecipe : t.libraryRecipe}
+                          </Badge>
+                          {recipe.tags.map((tag) => (
+                            <Badge bg="light" text="dark" key={tag}>
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </Accordion.Header>
+                    <Accordion.Body>
+                      <div className="d-flex flex-column gap-3">
+                        <div className="text-secondary small">
+                          <strong>{t.ingredients}:</strong> {recipe.ingredients.map(formatIngredientSummary).join(', ')}
+                        </div>
+                        {recipe.instructions ? (
+                          <div className="text-secondary small white-space-pre-line">{recipe.instructions}</div>
+                        ) : null}
+                        <div className="text-secondary small">{recipe.servings} {t.servings.toLowerCase()}</div>
+                        <div className="d-flex flex-wrap gap-2">
+                          <Button variant="outline-success" size="sm" onClick={() => handleSelectRecipeForLogging(recipe)}>{t.logRecipe}</Button>
+                          <Button variant={plannedRecipeIds.includes(recipe.id) ? 'success' : 'outline-secondary'} size="sm" onClick={() => togglePlannedRecipe(recipe.id)}>
+                            {plannedRecipeIds.includes(recipe.id) ? t.removeFromGroceryList : t.addToGroceryList}
+                          </Button>
+                          {recipe.isOwnedByCurrentUser ? <Button variant="outline-success" size="sm" onClick={() => applyRecipe(recipe)}>{t.editRecipe}</Button> : null}
+                        </div>
+                      </div>
+                    </Accordion.Body>
+                  </Accordion.Item>
+                )
+              })}
+            </Accordion>
+          )}
+        </Card.Body>
+      </Card>
     </Stack>
   )
 }

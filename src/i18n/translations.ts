@@ -193,6 +193,20 @@ export interface Translation {
   importRecipesNoResults: string;
   importRecipesSuccess: (count: number) => string;
   translateToSwedish: string;
+  recipeLibraryTitle: string;
+  recipeLibrarySearchPlaceholder: string;
+  recipeLibraryCount: (count: number) => string;
+  noRecipesMatchSearch: string;
+  profileTitle: string;
+  profileDescription: string;
+  preferencesTitle: string;
+  defaultMealLabel: string;
+  defaultMealDescription: string;
+  syncStatusTitle: string;
+  syncStatusOnline: string;
+  syncStatusOffline: string;
+  syncStatusPending: (count: number) => string;
+  syncStatusSynced: string;
 }
 
 export const translations: Record<AppLanguage, Translation> = {
@@ -408,6 +422,23 @@ export const translations: Record<AppLanguage, Translation> = {
     importRecipesNoResults: "No recipes were imported.",
     importRecipesSuccess: (count) => `Imported ${count} recipe(s).`,
     translateToSwedish: "Translate to Swedish",
+    recipeLibraryTitle: "Recipe library",
+    recipeLibrarySearchPlaceholder:
+      "Search recipes by name, tag or ingredient...",
+    recipeLibraryCount: (count) => `${count} recipe${count === 1 ? "" : "s"}`,
+    noRecipesMatchSearch: "No recipes match your search.",
+    profileTitle: "Your profile",
+    profileDescription: "Account information from your current session.",
+    preferencesTitle: "App preferences",
+    defaultMealLabel: "Default meal for new entries",
+    defaultMealDescription:
+      "This meal will be pre-selected when you log a new food entry.",
+    syncStatusTitle: "Sync status",
+    syncStatusOnline: "Online",
+    syncStatusOffline: "Offline",
+    syncStatusPending: (count) =>
+      `${count} change${count === 1 ? "" : "s"} waiting to sync`,
+    syncStatusSynced: "All changes saved to the server.",
   },
   sv: {
     appName: "Foodie",
@@ -623,5 +654,22 @@ export const translations: Record<AppLanguage, Translation> = {
     importRecipesNoResults: "Inga recept importerades.",
     importRecipesSuccess: (count) => `${count} recept importerade.`,
     translateToSwedish: "Översätt till svenska",
+    recipeLibraryTitle: "Receptbibliotek",
+    recipeLibrarySearchPlaceholder:
+      "Sök recept på namn, tagg eller ingrediens...",
+    recipeLibraryCount: (count) => `${count} recept`,
+    noRecipesMatchSearch: "Inga recept matchar din sökning.",
+    profileTitle: "Din profil",
+    profileDescription: "Kontoinformation från din nuvarande session.",
+    preferencesTitle: "Appinställningar",
+    defaultMealLabel: "Standardmåltid för nya inlägg",
+    defaultMealDescription:
+      "Den här måltiden väljs automatiskt när du loggar ett nytt livsmedel.",
+    syncStatusTitle: "Synkstatus",
+    syncStatusOnline: "Online",
+    syncStatusOffline: "Offline",
+    syncStatusPending: (count) =>
+      `${count} ändring${count === 1 ? "" : "ar"} väntar på synk`,
+    syncStatusSynced: "Alla ändringar är sparade på servern.",
   },
 };

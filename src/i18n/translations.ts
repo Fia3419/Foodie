@@ -216,7 +216,7 @@ export interface Translation {
 
 export const translations: Record<AppLanguage, Translation> = {
   en: {
-    appName: "Foodie",
+    appName: "Makrobalans",
     navDashboard: "Dashboard",
     navFoodLog: "Food log",
     navProgress: "Progress",
@@ -241,7 +241,7 @@ export const translations: Record<AppLanguage, Translation> = {
     authHeroTitle:
       "Track nutrition with a real account and resilient offline logging.",
     authHeroDescription:
-      "Foodie stores your meals, weight trend, goals, and recipes in a persistent .NET 10 API backed by SQL Server and queues changes locally when you lose connection.",
+      "Makrobalans stores your meals, weight trend, goals, and recipes in a persistent .NET 10 API backed by SQL Server and queues changes locally when you lose connection.",
     authBenefitOne: "Refresh-token based account session",
     authBenefitTwo: "SQL Server-backed food and weight history",
     authBenefitThree: "IndexedDB queue for offline writes",
@@ -353,7 +353,7 @@ export const translations: Record<AppLanguage, Translation> = {
     removeFromGroceryList: "Remove from grocery list",
     groceryList: "Grocery list",
     groceryListDescription:
-      "Pick recipes and Foodie will group ingredients into one list.",
+      "Pick recipes and Makrobalans will group ingredients into one list.",
     copyGroceryList: "Copy grocery list",
     noGroceriesSelected: "Select one or more recipes to build a grocery list.",
     plannedRecipes: "Planned recipes",
@@ -451,7 +451,7 @@ export const translations: Record<AppLanguage, Translation> = {
     syncStatusBadgeLabel: "Sync status",
   },
   sv: {
-    appName: "Foodie",
+    appName: "Makrobalans",
     navDashboard: "Översikt",
     navFoodLog: "Matlogg",
     navProgress: "Framsteg",
@@ -475,7 +475,7 @@ export const translations: Record<AppLanguage, Translation> = {
     authHeroBadge: "PWA för hälsa",
     authHeroTitle: "Följ din kost med riktigt konto och tålig offlinelogik.",
     authHeroDescription:
-      "Foodie sparar måltider, vikttrend, mål och recept i ett beständigt .NET 10-API med SQL Server och köar ändringar lokalt när uppkopplingen försvinner.",
+      "Makrobalans sparar måltider, vikttrend, mål och recept i ett beständigt .NET 10-API med SQL Server och köar ändringar lokalt när uppkopplingen försvinner.",
     authBenefitOne: "Kontosession med refresh token",
     authBenefitTwo: "SQL Server-lagrad mat- och vikthistorik",
     authBenefitThree: "IndexedDB-kö för offlineändringar",
@@ -589,7 +589,7 @@ export const translations: Record<AppLanguage, Translation> = {
     removeFromGroceryList: "Ta bort från inköpslista",
     groceryList: "Inköpslista",
     groceryListDescription:
-      "Välj recept så grupperar Foodie ingredienserna i en lista.",
+      "Välj recept så grupperar Makrobalans ingredienserna i en lista.",
     copyGroceryList: "Kopiera inköpslista",
     noGroceriesSelected:
       "Välj ett eller flera recept för att skapa en inköpslista.",

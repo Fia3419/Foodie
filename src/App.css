@@ -5,59 +5,64 @@
 .foodie-navbar {
   -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
-  background: rgba(248, 245, 236, 0.82);
-  border-bottom: 1px solid rgba(40, 60, 48, 0.08);
+  background: rgba(248, 245, 236, 0.98);
+  border-bottom: 2px solid rgba(20, 40, 32, 0.35);
 }
 
 .foodie-surface {
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.94),
-    rgba(244, 250, 246, 0.92)
+    rgba(255, 255, 255, 1),
+    rgba(244, 250, 246, 1)
   );
+  border: 1px solid rgba(20, 40, 32, 0.18);
 }
 
 .foodie-accent {
   background: linear-gradient(
     180deg,
-    rgba(239, 251, 244, 0.96),
-    rgba(220, 243, 235, 0.96)
+    rgba(229, 246, 238, 1),
+    rgba(208, 236, 224, 1)
   );
 }
 
 .goal-tile {
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(39, 95, 82, 0.1);
+  background: #ffffff;
+  border: 2px solid rgba(20, 84, 72, 0.45);
   border-radius: 1.25rem;
   padding: 1rem;
   min-height: 100%;
+  color: var(--bs-emphasis-color);
 }
 
 .goal-tile:hover,
 .goal-tile:focus-visible {
-  border-color: rgba(31, 111, 95, 0.55);
-  box-shadow: 0 0 0 0.2rem rgba(31, 111, 95, 0.14);
+  border-color: #062a23;
+  box-shadow: 0 0 0 0.2rem rgba(6, 42, 35, 0.3);
 }
 
 .goal-tile-active {
-  border-color: rgba(31, 111, 95, 0.55);
-  background: rgba(236, 248, 243, 0.95);
+  border-color: #062a23;
+  background: #d8efe5;
 }
 
 .macro-chip {
   border-radius: 999px;
-  background: rgba(240, 244, 241, 0.9);
-  color: #44544d;
+  background: #ffffff;
+  color: var(--bs-emphasis-color);
+  border: 1px solid rgba(20, 40, 32, 0.45);
   font-size: 0.875rem;
+  font-weight: 600;
   padding: 0.45rem 0.8rem;
 }
 
 .foodie-auth-panel {
   background: linear-gradient(
     180deg,
-    rgba(235, 248, 241, 0.92),
-    rgba(224, 241, 234, 0.92)
+    rgba(220, 244, 233, 1),
+    rgba(199, 232, 218, 1)
   );
+  color: var(--bs-emphasis-color);
 }
 
 .foodie-language-select {
@@ -70,18 +75,20 @@
   top: 0.5rem;
   left: 0.5rem;
   z-index: 2000;
-  background: #1f6f5f;
-  color: #fff;
-  padding: 0.5rem 0.85rem;
+  background: #062a23;
+  color: #ffffff;
+  padding: 0.65rem 1rem;
   border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
+  text-decoration: underline;
+  font-weight: 700;
+  border: 2px solid #ffffff;
 }
 
 .foodie-skip-link:focus,
 .foodie-skip-link:focus-visible {
-  outline: 3px solid #fff;
+  outline: 3px solid #ffffff;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px #062a23;
 }
 
 main:focus,

@@ -1,16 +1,29 @@
 :root {
   --bs-body-font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-  --bs-primary: #1f6f5f;
-  --bs-primary-rgb: 31, 111, 95;
-  --bs-success: #2f8f73;
-  --bs-success-rgb: 47, 143, 115;
-  --bs-warning: #dca14a;
-  --bs-warning-rgb: 220, 161, 74;
-  --bs-info: #6b9db5;
-  --bs-info-rgb: 107, 157, 181;
-  --bs-body-color: #47564f;
+  /* High-contrast palette tuned for WCAG AA (>= 4.5:1) against the light app background */
+  --bs-primary: #145448;
+  --bs-primary-rgb: 20, 84, 72;
+  --bs-success: #1d6b54;
+  --bs-success-rgb: 29, 107, 84;
+  --bs-warning: #8a5a00;
+  --bs-warning-rgb: 138, 90, 0;
+  --bs-danger: #a31f1f;
+  --bs-danger-rgb: 163, 31, 31;
+  --bs-info: #1f5c75;
+  --bs-info-rgb: 31, 92, 117;
+  --bs-body-color: #1a2520;
+  --bs-body-color-rgb: 26, 37, 32;
   --bs-body-bg: #f5efe2;
-  --bs-border-color: rgba(40, 60, 48, 0.1);
+  --bs-secondary-color: #2c3a33;
+  --bs-secondary-color-rgb: 44, 58, 51;
+  --bs-tertiary-color: #2c3a33;
+  --bs-emphasis-color: #0e1814;
+  --bs-emphasis-color-rgb: 14, 24, 20;
+  --bs-border-color: rgba(20, 40, 32, 0.32);
+  --bs-link-color: #0d4a3e;
+  --bs-link-color-rgb: 13, 74, 62;
+  --bs-link-hover-color: #062a23;
+  --bs-link-hover-color-rgb: 6, 42, 35;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -25,6 +38,7 @@ body,
 
 body {
   margin: 0;
+  color: var(--bs-body-color);
   background:
     radial-gradient(
       circle at top left,
@@ -35,10 +49,103 @@ body {
 }
 
 a {
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+.navbar-nav .nav-link {
+  color: var(--bs-emphasis-color);
 }
 
 .navbar-nav .nav-link.active {
   color: var(--bs-primary);
-  font-weight: 600;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+/* Strengthen Bootstrap helper classes that previously rendered as low-contrast greys */
+.text-secondary,
+.text-muted {
+  color: var(--bs-secondary-color) !important;
+}
+
+.text-dark {
+  color: var(--bs-emphasis-color) !important;
+}
+
+/* Ensure form controls keep a visible border against light backgrounds */
+.form-control,
+.form-select {
+  color: var(--bs-emphasis-color);
+  border-color: rgba(20, 40, 32, 0.45);
+}
+
+.form-control::placeholder {
+  color: #4a5751;
+  opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 0.2rem rgba(20, 84, 72, 0.35);
+}
+
+/* Highly visible keyboard focus indicator everywhere */
+:focus-visible {
+  outline: 3px solid #062a23;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+.btn:focus-visible,
+a:focus-visible {
+  outline: 3px solid #062a23;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 0.2rem rgba(6, 42, 35, 0.25);
+}
+
+/* Tighten alert/badge contrast */
+.alert {
+  border-width: 2px;
+}
+
+.badge {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.badge.bg-light {
+  background-color: #ffffff !important;
+  color: var(--bs-emphasis-color) !important;
+  border: 1px solid rgba(20, 40, 32, 0.35);
+}
+
+.badge.bg-warning {
+  color: #1a1100 !important;
+}
+
+/* Honor user requests for additional contrast (Windows / macOS / browser settings) */
+@media (prefers-contrast: more) {
+  :root {
+    --bs-body-color: #000000;
+    --bs-body-color-rgb: 0, 0, 0;
+    --bs-secondary-color: #000000;
+    --bs-emphasis-color: #000000;
+    --bs-border-color: #000000;
+    --bs-primary: #003528;
+    --bs-success: #003e2c;
+    --bs-link-color: #002219;
+  }
+
+  .form-control,
+  .form-select {
+    border-color: #000000;
+  }
 }

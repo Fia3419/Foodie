@@ -1,6 +1,6 @@
 {
-  "name": "Foodie",
-  "short_name": "Foodie",
+  "name": "Makrobalans",
+  "short_name": "Makrobalans",
   "description": "Food tracking for general health, strength gain, and weight loss.",
   "start_url": "/",
   "display": "standalone",

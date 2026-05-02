@@ -8,7 +8,7 @@ const mockLogout = vi.fn()
 
 let mockLanguage = {
   t: {
-    appName: 'Foodie',
+    appName: 'Makrobalans',
     navDashboard: 'Dashboard',
     navFoodLog: 'Food log',
     navProgress: 'Progress',

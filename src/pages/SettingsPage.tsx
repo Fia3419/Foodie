@@ -2,7 +2,9 @@ import axios from 'axios'
 import { type Dispatch, type FormEvent, type SetStateAction, useEffect, useState } from 'react'
 import { Alert, Badge, Button, Card, Col, Form, Row, Stack } from 'react-bootstrap'
 import { useChangePasswordMutation } from '../api/foodieApi'
+import { FoodieIcon, SettingsIllustration, type FoodieIconName } from '../components/ColorfulVisuals'
 import { LanguageSelect } from '../components/LanguageSelect'
+import { PasswordRules } from '../components/PasswordRules'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { passwordPolicyMinimumLength, validatePasswordConfirmation } from '../lib/passwordPolicy'
 import { useSessionContext } from '../contexts/SessionContext'
@@ -28,16 +30,21 @@ const readStoredDefaultMeal = (): MealOption => {
 
 type TranslationStrings = ReturnType<typeof useLanguageContext>['t']
 
-const PasswordRules = ({ t }: { t: TranslationStrings }) => (
-  <div>
-    <div className='fw-semibold small text-dark mb-1'>{t.passwordRulesTitle}</div>
-    <ul className='small text-secondary ps-3 mb-0'>
-      <li>{t.passwordRuleLength}</li>
-      <li>{t.passwordRuleUppercase}</li>
-      <li>{t.passwordRuleLowercase}</li>
-      <li>{t.passwordRuleDigit}</li>
-      <li>{t.passwordRuleSpecial}</li>
-    </ul>
+interface SettingsSectionHeaderProps {
+  title: string
+  description?: string
+  icon: FoodieIconName
+}
+
+const SettingsSectionHeader = ({ title, description, icon }: SettingsSectionHeaderProps) => (
+  <div className='d-flex align-items-start gap-3 mb-3'>
+    <span className='foodie-heading-icon'>
+      <FoodieIcon name={icon} className='foodie-inline-icon' />
+    </span>
+    <div>
+      <h2 className='h5 text-dark mb-1'>{title}</h2>
+      {description ? <p className='text-secondary small mb-0'>{description}</p> : null}
+    </div>
   </div>
 )
 
@@ -62,10 +69,9 @@ interface ProfileCardProps {
 }
 
 const ProfileCard = ({ t, userName, email, goalLabel }: ProfileCardProps) => (
-  <Card className='border-0 shadow-sm'>
+  <Card className='border-0 shadow-sm foodie-soft-card foodie-soft-card-sky'>
     <Card.Body className='p-4'>
-      <h2 className='h5 text-dark mb-1'>{t.profileTitle}</h2>
-      <p className='text-secondary small mb-3'>{t.profileDescription}</p>
+      <SettingsSectionHeader title={t.profileTitle} description={t.profileDescription} icon='profile' />
       <dl className='row mb-0 small'>
         <dt className='col-sm-4 text-secondary fw-normal'>{t.name}</dt>
         <dd className='col-sm-8 fw-semibold text-dark'>{userName ?? '—'}</dd>
@@ -103,9 +109,9 @@ const ChangePasswordCard = ({
   isPending,
   onSubmit,
 }: ChangePasswordCardProps) => (
-  <Card className='border-0 shadow-sm'>
+  <Card className='border-0 shadow-sm foodie-soft-card foodie-soft-card-warm'>
     <Card.Body className='p-4'>
-      <h2 className='h5 text-dark mb-3'>{t.changePassword}</h2>
+      <SettingsSectionHeader title={t.changePassword} icon='shield' />
       <Form onSubmit={onSubmit}>
         <Stack gap={3}>
           <Form.Group controlId='settings-current-password'>
@@ -161,9 +167,9 @@ interface PreferencesCardProps {
 }
 
 const PreferencesCard = ({ t, defaultMeal, setDefaultMeal }: PreferencesCardProps) => (
-  <Card className='border-0 shadow-sm'>
+  <Card className='border-0 shadow-sm foodie-soft-card foodie-soft-card-mint'>
     <Card.Body className='p-4'>
-      <h2 className='h5 text-dark mb-3'>{t.preferencesTitle}</h2>
+      <SettingsSectionHeader title={t.preferencesTitle} icon='planner' />
       <Form.Group controlId='settings-default-meal' className='mb-0'>
         <Form.Label>{t.defaultMealLabel}</Form.Label>
         <Form.Select value={defaultMeal} onChange={(event) => setDefaultMeal(event.target.value as MealOption)} aria-label={t.defaultMealLabel}>
@@ -186,11 +192,14 @@ interface SyncStatusCardProps {
 }
 
 const SyncStatusCard = ({ t, isOnline, queuedActions }: SyncStatusCardProps) => (
-  <Card className='border-0 shadow-sm'>
+  <Card className='border-0 shadow-sm foodie-soft-card foodie-soft-card-sky'>
     <Card.Body className='p-4'>
       <div className='d-flex justify-content-between align-items-start gap-3'>
         <div>
-          <h2 className='h5 text-dark mb-2'>{t.syncStatusTitle}</h2>
+          <h2 className='h5 text-dark mb-2 d-flex align-items-center gap-2'>
+            <span className='foodie-heading-icon foodie-heading-icon-small'><FoodieIcon name='dashboard' className='foodie-inline-icon' /></span>
+            {t.syncStatusTitle}
+          </h2>
           <p className='text-secondary small mb-0'>
             {queuedActions > 0 ? t.syncStatusPending(queuedActions) : t.syncStatusSynced}
           </p>
@@ -244,20 +253,25 @@ export const SettingsPage = () => {
   return (
     <Stack gap={4}>
       <Card className='border-0 shadow-sm foodie-surface'>
-        <Card.Body className='p-4'>
-          <p className='small text-uppercase text-muted fw-semibold mb-2'>{t.settings}</p>
-          <h1 className='h2 text-dark mb-2'>{t.accountSettings}</h1>
-          <p className='text-secondary mb-0'>{t.languageDescription}</p>
+        <Card.Body className='p-4 d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center'>
+          <div>
+            <p className='small text-uppercase text-muted fw-semibold mb-2 foodie-kicker'>{t.settings}</p>
+            <h1 className='h2 text-dark mb-2'>{t.accountSettings}</h1>
+            <p className='text-secondary mb-0'>{t.languageDescription}</p>
+          </div>
+          <div className='foodie-page-visual' aria-hidden='true'>
+            <SettingsIllustration />
+          </div>
         </Card.Body>
       </Card>
 
       <Row className='g-4'>
         <Col lg={5}>
-          <Card className='border-0 shadow-sm h-100'>
+          <Card className='border-0 shadow-sm h-100 foodie-section-card foodie-section-card-warm'>
             <Card.Body className='p-4'>
-              <h2 className='h5 text-dark mb-3'>{t.language}</h2>
+              <SettingsSectionHeader title={t.language} icon='language' />
               <LanguageSelect className='form-select mb-4' />
-              <h2 className='h5 text-dark mb-3'>{t.securityActions}</h2>
+              <SettingsSectionHeader title={t.securityActions} icon='shield' />
               <div className='d-grid gap-2'>
                 <Button variant='outline-dark' onClick={logout} disabled={isPending}>
                   {t.logout}

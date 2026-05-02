@@ -238,7 +238,11 @@ public sealed class AuthController : ControllerBase
         }
 
         var userId = GetUserId();
-        var currentSessionId = Guid.Parse(User.FindFirst("session_id")?.Value ?? Guid.Empty.ToString());
+        if (!TryGetCurrentSessionId(out var currentSessionId))
+        {
+            return Unauthorized(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidCredentials)));
+        }
+
         var user = await _dbContext.Users.SingleAsync(entity => entity.Id == userId, cancellationToken);
         var verificationResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.CurrentPassword);
 
@@ -273,6 +277,11 @@ public sealed class AuthController : ControllerBase
     private Guid GetUserId()
     {
         return Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    }
+
+    private bool TryGetCurrentSessionId(out Guid sessionId)
+    {
+        return Guid.TryParse(User.FindFirst("session_id")?.Value, out sessionId);
     }
 
     [Authorize]
@@ -335,7 +344,11 @@ public sealed class AuthController : ControllerBase
     public async Task<ActionResult<ApiMessageDto>> RevokeOtherSessions(CancellationToken cancellationToken)
     {
         var userId = Guid.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-        var currentSessionId = Guid.Parse(User.FindFirst("session_id")?.Value ?? Guid.Empty.ToString());
+        if (!TryGetCurrentSessionId(out var currentSessionId))
+        {
+            return Unauthorized(new ApiMessageDto(_localizer.Get(ApiTextKey.InvalidCredentials)));
+        }
+
         var refreshTokens = await _dbContext.RefreshTokens
             .Where(token => token.UserId == userId && token.SessionId != currentSessionId && token.RevokedAtUtc == null)
             .ToListAsync(cancellationToken);

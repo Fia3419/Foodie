@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEventHandler, type SyntheticEvent } from 'react'
 import { Accordion, Alert, Badge, Button, Card, Col, Form, InputGroup, Row, Stack } from 'react-bootstrap'
 import { fetchNutritionMacros, fetchNutritionSearch, useCreateMealLogMutation, useCreateRecipeMutation, useDeleteRecipeMutation, useImportRecipesMutation, useRecipes, useUpdateRecipeMutation } from '../api/foodieApi'
+import { FoodieIcon, RecipesIllustration } from '../components/ColorfulVisuals'
 import { NutritionMacros, NutritionSearchResult, RecipeIngredient, RecipeSummary, UpsertRecipeRequest } from '../types/models'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { getLocalDateInputValue, getLocalTimeInputValue } from '../lib/dateTime'
@@ -594,18 +595,26 @@ export const RecipesPage = () => {
       <Card className="border-0 shadow-sm foodie-surface">
         <Card.Body className="p-4 d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
           <div>
-            <p className="small text-uppercase text-muted fw-semibold mb-2">{t.recipes}</p>
+            <p className="small text-uppercase text-muted fw-semibold mb-2 foodie-kicker">{t.recipes}</p>
             <h1 className="h2 text-dark mb-2">{t.recipesTitle}</h1>
             <p className="text-secondary mb-0">{t.recipesDescription}</p>
           </div>
-          <Button variant="outline-success" onClick={() => applyRecipe(null)}>{t.createRecipe}</Button>
+          <div className="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-3">
+            <div className="foodie-page-visual" aria-hidden="true">
+              <RecipesIllustration />
+            </div>
+            <Button variant="outline-success" onClick={() => applyRecipe(null)}>{t.createRecipe}</Button>
+          </div>
         </Card.Body>
       </Card>
 
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm foodie-section-card foodie-section-card-warm">
         <Card.Body className="p-4 d-flex flex-column gap-3">
           <div>
-            <h2 className="h5 text-dark mb-1">{t.importRecipesTitle}</h2>
+            <h2 className="h5 text-dark mb-1 d-flex align-items-center gap-2">
+              <span className="foodie-heading-icon"><FoodieIcon name="spark" className="foodie-inline-icon" /></span>
+              {t.importRecipesTitle}
+            </h2>
             <p className="text-secondary small mb-0">{t.importRecipesDescription}</p>
           </div>
           <Row className="g-2 align-items-end">
@@ -661,10 +670,13 @@ export const RecipesPage = () => {
 
       <Row className="g-4">
         <Col xl={5}>
-          <Card className="border-0 shadow-sm h-100">
+          <Card className="border-0 shadow-sm h-100 foodie-soft-card foodie-soft-card-mint">
             <Card.Body className="p-4 d-flex flex-column gap-3">
               <div>
-                <h2 className="h4 text-dark mb-2">{t.recipeLogTitle}</h2>
+                <h2 className="h4 text-dark mb-2 d-flex align-items-center gap-2">
+                  <span className="foodie-heading-icon"><FoodieIcon name="recipes" className="foodie-inline-icon" /></span>
+                  {t.recipeLogTitle}
+                </h2>
                 <p className="text-secondary mb-0">{t.recipeLogDescription}</p>
               </div>
               <Form.Group controlId="recipe-to-log">
@@ -721,11 +733,14 @@ export const RecipesPage = () => {
         </Col>
 
         <Col xl={7}>
-          <Card className="border-0 shadow-sm h-100">
+          <Card className="border-0 shadow-sm h-100 foodie-soft-card foodie-soft-card-sky">
             <Card.Body className="p-4 d-flex flex-column gap-3">
               <div className="d-flex flex-column flex-lg-row justify-content-between gap-3">
                 <div>
-                  <h2 className="h4 text-dark mb-2">{t.groceryList}</h2>
+                  <h2 className="h4 text-dark mb-2 d-flex align-items-center gap-2">
+                    <span className="foodie-heading-icon"><FoodieIcon name="grocery" className="foodie-inline-icon" /></span>
+                    {t.groceryList}
+                  </h2>
                   <p className="text-secondary mb-0">{t.groceryListDescription}</p>
                 </div>
                 <div className="d-flex flex-wrap gap-2 align-items-center">
@@ -752,9 +767,16 @@ export const RecipesPage = () => {
         </Col>
       </Row>
 
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm foodie-section-card foodie-section-card-mint">
         <Card.Body className="p-4">
           <Form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <h2 className="h4 text-dark mb-2 d-flex align-items-center gap-2">
+                <span className="foodie-heading-icon"><FoodieIcon name="planner" className="foodie-inline-icon" /></span>
+                {editingRecipe ? t.editRecipe : t.createRecipe}
+              </h2>
+              <p className="text-secondary mb-0">{t.recipesDescription}</p>
+            </div>
             <Row className="g-3">
               <Col md={6}>
                 <Form.Group controlId="recipe-name">
@@ -933,11 +955,14 @@ export const RecipesPage = () => {
         </Card.Body>
       </Card>
 
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm foodie-section-card foodie-section-card-sky">
         <Card.Body className="p-4 d-flex flex-column gap-3">
           <div className="d-flex flex-column flex-lg-row justify-content-between gap-2 align-items-lg-center">
             <div>
-              <h2 className="h4 text-dark mb-1">{t.recipeLibraryTitle}</h2>
+              <h2 className="h4 text-dark mb-1 d-flex align-items-center gap-2">
+                <span className="foodie-heading-icon"><FoodieIcon name="recipes" className="foodie-inline-icon" /></span>
+                {t.recipeLibraryTitle}
+              </h2>
               <p className="text-secondary mb-0 small">
                 {t.recipeLibraryCount(filteredRecipes.length)}
                 {recipeSearch.trim() && filteredRecipes.length !== recipesQuery.data.length

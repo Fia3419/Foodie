@@ -24,6 +24,8 @@ const getBarcodeDetector = () => {
   return (window as Window & { BarcodeDetector?: BarcodeDetectorConstructor }).BarcodeDetector
 }
 
+const scanIntervalMs = 250
+
 export const BarcodeScanner = ({ show, onHide, onDetected }: BarcodeScannerProps) => {
   const { t } = useLanguageContext()
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -57,17 +59,21 @@ export const BarcodeScanner = ({ show, onHide, onDetected }: BarcodeScannerProps
     }
 
     let isCancelled = false
-    let animationFrameId = 0
+    let scanTimeoutId: number | undefined
     let stream: MediaStream | null = null
     const detector = new BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] })
+
+    const scheduleScan = (delay = scanIntervalMs) => {
+      scanTimeoutId = window.setTimeout(() => {
+        void scan()
+      }, delay)
+    }
 
     const scan = async () => {
       const videoElement = videoRef.current
 
       if (!videoElement || isCancelled || videoElement.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA) {
-        animationFrameId = window.requestAnimationFrame(() => {
-          void scan()
-        })
+        scheduleScan(100)
         return
       }
 
@@ -84,9 +90,7 @@ export const BarcodeScanner = ({ show, onHide, onDetected }: BarcodeScannerProps
         return
       }
 
-      animationFrameId = window.requestAnimationFrame(() => {
-        void scan()
-      })
+      scheduleScan()
     }
 
     const start = async () => {
@@ -109,9 +113,7 @@ export const BarcodeScanner = ({ show, onHide, onDetected }: BarcodeScannerProps
         }
 
         setErrorMessage(null)
-        animationFrameId = window.requestAnimationFrame(() => {
-          void scan()
-        })
+        scheduleScan(0)
       } catch {
         setErrorMessage(t.barcodeScannerUnsupported)
       }
@@ -121,7 +123,9 @@ export const BarcodeScanner = ({ show, onHide, onDetected }: BarcodeScannerProps
 
     return () => {
       isCancelled = true
-      window.cancelAnimationFrame(animationFrameId)
+      if (scanTimeoutId !== undefined) {
+        window.clearTimeout(scanTimeoutId)
+      }
 
       if (stream) {
         stream.getTracks().forEach((track) => track.stop())

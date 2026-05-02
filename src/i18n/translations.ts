@@ -266,9 +266,11 @@ export const translations: Record<AppLanguage, Translation> = {
       "Track nutrition with a real account and resilient offline logging.",
     authHeroDescription:
       "Makrobalans stores your meals, weight trend, goals, recipes and queues changes locally when you lose connection.",
-    authBenefitOne: "Refresh-token based account session",
-    authBenefitTwo: "SQL Server-backed food and weight history",
-    authBenefitThree: "IndexedDB queue for offline writes",
+    authBenefitOne: "Your progress is saved and follows you over time",
+    authBenefitTwo:
+      "Meals, recipes, and weight updates stay gathered in one place",
+    authBenefitThree:
+      "The app keeps working even when your connection is unstable",
     authError: "Authentication failed. Check your credentials and try again.",
     registerError: "Registration failed. Try a different email or password.",
     forgotPassword: "Forgot password",
@@ -529,9 +531,9 @@ export const translations: Record<AppLanguage, Translation> = {
     authHeroTitle: "Följ din kost med riktigt konto och tålig offlinelogik.",
     authHeroDescription:
       "Makrobalans sparar måltider, vikttrend, mål, recept och köar ändringar lokalt när uppkopplingen försvinner.",
-    authBenefitOne: "Kontosession med refresh token",
-    authBenefitTwo: "SQL Server-lagrad mat- och vikthistorik",
-    authBenefitThree: "IndexedDB-kö för offlineändringar",
+    authBenefitOne: "Dina framsteg sparas och följer med över tid",
+    authBenefitTwo: "Måltider, recept och vikt samlas på ett ställe",
+    authBenefitThree: "Appen fungerar även när uppkopplingen svajar",
     authError:
       "Inloggningen misslyckades. Kontrollera dina uppgifter och försök igen.",
     registerError:

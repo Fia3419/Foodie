@@ -4,6 +4,7 @@ import { Alert, Badge, Button, Card, Col, Container, Form, Row, Stack, Tab, Tabs
 import { useForgotPasswordMutation, useLoginMutation, useRegisterMutation, useResetPasswordMutation } from '../api/foodieApi'
 import { AuthIllustration, FoodieIcon, type FoodieIconName } from '../components/ColorfulVisuals'
 import { LanguageSelect } from '../components/LanguageSelect'
+import { PasswordRules } from '../components/PasswordRules'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { passwordPolicyMinimumLength, validatePasswordConfirmation } from '../lib/passwordPolicy'
 import { useSessionContext } from '../contexts/SessionContext'
@@ -40,19 +41,6 @@ const getApiErrorMessage = (error: unknown, fallbackMessage: string) => {
 }
 
 type TranslationStrings = ReturnType<typeof useLanguageContext>['t']
-
-const PasswordRules = ({ t }: { t: TranslationStrings }) => (
-  <div>
-    <div className='fw-semibold small text-dark mb-1'>{t.passwordRulesTitle}</div>
-    <ul className='small text-secondary ps-3 mb-0'>
-      <li>{t.passwordRuleLength}</li>
-      <li>{t.passwordRuleUppercase}</li>
-      <li>{t.passwordRuleLowercase}</li>
-      <li>{t.passwordRuleDigit}</li>
-      <li>{t.passwordRuleSpecial}</li>
-    </ul>
-  </div>
-)
 
 interface LoginTabProps {
   t: TranslationStrings
@@ -393,7 +381,7 @@ export const AuthPage = () => {
 
   const loginError = loginMutation.error ? getApiErrorMessage(loginMutation.error, t.authError) : null
   const registerError = registerMutation.error ? getApiErrorMessage(registerMutation.error, t.registerError) : null
-  const forgotPasswordError = forgotPasswordMutation.error ? getApiErrorMessage(forgotPasswordMutation.error, t.passwordResetRequestSuccess) : null
+  const forgotPasswordError = forgotPasswordMutation.error ? getApiErrorMessage(forgotPasswordMutation.error, t.authError) : null
   const resetPasswordError = resetPasswordMutation.error ? getApiErrorMessage(resetPasswordMutation.error, t.authError) : null
   const registerPasswordsMatch = validatePasswordConfirmation(registerForm.password, registerConfirmPassword)
   const resetPasswordsMatch = validatePasswordConfirmation(resetPasswordForm.newPassword, resetConfirmPassword)

@@ -204,7 +204,8 @@
 }
 
 .foodie-auth-visual,
-.foodie-dashboard-visual {
+.foodie-dashboard-visual,
+.foodie-page-visual {
   border-radius: 1.75rem;
   overflow: hidden;
   background: linear-gradient(
@@ -224,6 +225,11 @@
 
 .foodie-dashboard-visual {
   width: min(18rem, 100%);
+  padding: 0.6rem;
+}
+
+.foodie-page-visual {
+  width: min(17rem, 100%);
   padding: 0.6rem;
 }
 
@@ -252,8 +258,98 @@
   letter-spacing: 0.16em;
 }
 
+.foodie-heading-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 208, 89, 0.26),
+    rgba(72, 167, 255, 0.18)
+  );
+  color: #0e4b3f;
+  flex: 0 0 auto;
+}
+
+.foodie-heading-icon-small {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.8rem;
+}
+
 .foodie-focus-item {
   border-color: rgba(20, 40, 32, 0.12) !important;
+}
+
+.foodie-section-card {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.98),
+    rgba(250, 252, 247, 0.96)
+  );
+}
+
+.foodie-section-card-warm {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 250, 237, 1),
+    rgba(255, 238, 225, 0.96)
+  );
+}
+
+.foodie-section-card-mint {
+  background: linear-gradient(
+    155deg,
+    rgba(242, 251, 245, 1),
+    rgba(226, 244, 237, 0.96)
+  );
+}
+
+.foodie-section-card-sky {
+  background: linear-gradient(
+    155deg,
+    rgba(242, 248, 255, 1),
+    rgba(226, 238, 252, 0.96)
+  );
+}
+
+.foodie-soft-card {
+  overflow: hidden;
+}
+
+.foodie-soft-card-gold {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 249, 231, 1),
+    rgba(255, 234, 208, 0.96)
+  );
+}
+
+.foodie-soft-card-sky {
+  background: linear-gradient(
+    160deg,
+    rgba(241, 248, 255, 1),
+    rgba(222, 237, 251, 0.96)
+  );
+}
+
+.foodie-soft-card-mint {
+  background: linear-gradient(
+    160deg,
+    rgba(239, 251, 244, 1),
+    rgba(220, 244, 233, 0.96)
+  );
+}
+
+.foodie-log-entry-card {
+  background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 1),
+    rgba(247, 252, 248, 0.96)
+  );
 }
 
 .foodie-metric-card {
@@ -303,6 +399,66 @@
   );
 }
 
+.foodie-progress-bar-wrap {
+  max-width: 26rem;
+}
+
+.foodie-progress-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.foodie-progress-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -2.25rem -2.25rem auto;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.38);
+}
+
+.foodie-progress-card-weight {
+  background: linear-gradient(
+    155deg,
+    rgba(242, 248, 255, 1),
+    rgba(223, 237, 252, 0.96)
+  );
+}
+
+.foodie-progress-card-adherence {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 248, 225, 1),
+    rgba(255, 231, 189, 0.96)
+  );
+}
+
+.foodie-progress-card-streak {
+  background: linear-gradient(
+    155deg,
+    rgba(241, 251, 244, 1),
+    rgba(221, 244, 233, 0.96)
+  );
+}
+
+.foodie-progress-card-milestone {
+  background: linear-gradient(
+    155deg,
+    rgba(255, 243, 239, 1),
+    rgba(255, 224, 217, 0.96)
+  );
+}
+
+.foodie-progress-table th {
+  border-bottom-color: rgba(20, 40, 32, 0.18);
+}
+
+.foodie-progress-table td {
+  background: transparent;
+  border-bottom-color: rgba(20, 40, 32, 0.12);
+}
+
 .foodie-language-select {
   width: auto;
   min-width: 8rem;
@@ -335,7 +491,8 @@ main:focus-visible {
 }
 
 @media (max-width: 991.98px) {
-  .foodie-dashboard-visual {
+  .foodie-dashboard-visual,
+  .foodie-page-visual {
     width: 100%;
   }
 }
@@ -346,7 +503,8 @@ main:focus-visible {
   }
 
   .foodie-auth-visual,
-  .foodie-dashboard-visual {
+  .foodie-dashboard-visual,
+  .foodie-page-visual {
     margin-inline: auto;
   }
 }

@@ -13,6 +13,7 @@ import {
   useUpdateSavedFoodMutation,
 } from '../api/foodieApi'
 import { BarcodeScanner } from '../components/BarcodeScanner'
+import { FoodLogIllustration, FoodieIcon } from '../components/ColorfulVisuals'
 import { SavedFoodSection } from '../components/SavedFoodSection'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { useSessionContext } from '../contexts/SessionContext'
@@ -343,25 +344,31 @@ export const FoodLogPage = () => {
         <Card className="border-0 shadow-sm foodie-surface">
           <Card.Body className="p-4 d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
             <div>
-              <p className="small text-uppercase text-muted fw-semibold mb-2">{t.dailyLog}</p>
+              <p className="small text-uppercase text-muted fw-semibold mb-2 foodie-kicker">{t.dailyLog}</p>
               <h1 className="h2 text-dark mb-2">{t.mealsAndMacros}</h1>
               <p className="text-secondary mb-0">{t.logDescription}</p>
+            </div>
+            <div className="foodie-page-visual" aria-hidden="true">
+              <FoodLogIllustration />
             </div>
           </Card.Body>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card className="border-0 shadow-sm foodie-section-card foodie-section-card-warm">
           <Card.Body className="p-4">
             <div className="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
               <div>
-                <h2 className="h4 text-dark mb-2">{t.quickActions}</h2>
+                <h2 className="h4 text-dark mb-2 d-flex align-items-center gap-2">
+                  <span className="foodie-heading-icon"><FoodieIcon name="spark" className="foodie-inline-icon" /></span>
+                  {t.quickActions}
+                </h2>
                 <p className="text-secondary mb-0">{t.quickActionsDescription}</p>
               </div>
               <div className="d-flex flex-wrap gap-2">
                 <Button variant="outline-success" type="button" onClick={() => void handleRepeatLatestMeal()} disabled={isRepeatingLatest || !recentMealsQuery.data?.length}>
                   {t.repeatLatestMeal}
                 </Button>
-                <Button variant="outline-secondary" type="button" onClick={() => void handleCopyYesterday()} disabled={isCopyingYesterday || (yesterdayCopyTriggered && !yesterdayLogQuery.data?.items.length && !yesterdayLogQuery.isFetching)}>
+                <Button variant="outline-secondary" type="button" onClick={() => void handleCopyYesterday()} disabled={isCopyingYesterday || yesterdayLogQuery.isFetching}>
                   {t.copyYesterday}
                 </Button>
               </div>
@@ -369,10 +376,13 @@ export const FoodLogPage = () => {
 
           <Row className="g-4">
             <Col lg={5}>
-              <Card className="border-0 bg-light-subtle h-100">
+              <Card className="border-0 h-100 foodie-soft-card foodie-soft-card-gold">
                 <Card.Body className="p-3 d-flex flex-column gap-3">
                   <div>
-                    <h3 className="h6 text-dark mb-2">{t.barcode}</h3>
+                    <h3 className="h6 text-dark mb-2 d-flex align-items-center gap-2">
+                      <span className="foodie-heading-icon foodie-heading-icon-small"><FoodieIcon name="barcode" className="foodie-inline-icon" /></span>
+                      {t.barcode}
+                    </h3>
                     <p className="text-secondary small mb-0">{t.quickActionsDescription}</p>
                   </div>
                   <Form.Control value={barcodeValue} onChange={(event) => setBarcodeValue(event.target.value)} placeholder="0123456789012" inputMode="numeric" />
@@ -391,10 +401,13 @@ export const FoodLogPage = () => {
             </Col>
 
             <Col lg={7}>
-              <Card className="border-0 bg-light-subtle h-100">
+              <Card className="border-0 h-100 foodie-soft-card foodie-soft-card-sky">
                 <Card.Body className="p-3 d-flex flex-column gap-3">
                   <div>
-                    <h3 className="h6 text-dark mb-2">{t.recentMeals}</h3>
+                    <h3 className="h6 text-dark mb-2 d-flex align-items-center gap-2">
+                      <span className="foodie-heading-icon foodie-heading-icon-small"><FoodieIcon name="foodLog" className="foodie-inline-icon" /></span>
+                      {t.recentMeals}
+                    </h3>
                     <p className="text-secondary small mb-0">{t.repeatLatestMeal}</p>
                   </div>
                   <Stack gap={2}>
@@ -461,9 +474,16 @@ export const FoodLogPage = () => {
           </Card.Body>
         </Card>
 
-        <Card className="border-0 shadow-sm">
+        <Card className="border-0 shadow-sm foodie-section-card foodie-section-card-mint">
           <Card.Body className="p-4">
             <Form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <h2 className="h4 text-dark mb-2 d-flex align-items-center gap-2">
+                  <span className="foodie-heading-icon"><FoodieIcon name="foodLog" className="foodie-inline-icon" /></span>
+                  {editingMealLogId ? t.updateFoodEntry : t.addFoodEntry}
+                </h2>
+                <p className="text-secondary mb-0">{t.logDescription}</p>
+              </div>
               <Row className="g-3">
                 {editingMealLogId ? (
                   <Col xs={12}>
@@ -625,7 +645,7 @@ export const FoodLogPage = () => {
         <Row className="g-4">
           {dailyLogQuery.data.items.map((item) => (
             <Col lg={6} key={item.id}>
-              <Card className="border-0 shadow-sm h-100">
+              <Card className="border-0 shadow-sm h-100 foodie-log-entry-card">
                 <Card.Body className="p-4">
                   <Stack direction="horizontal" className="justify-content-between align-items-start mb-3">
                     <div>

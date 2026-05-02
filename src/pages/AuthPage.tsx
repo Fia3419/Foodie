@@ -2,6 +2,7 @@ import axios from 'axios'
 import { type Dispatch, type FormEvent, type SetStateAction, useState } from 'react'
 import { Alert, Badge, Button, Card, Col, Container, Form, Row, Stack, Tab, Tabs } from 'react-bootstrap'
 import { useForgotPasswordMutation, useLoginMutation, useRegisterMutation, useResetPasswordMutation } from '../api/foodieApi'
+import { AuthIllustration, FoodieIcon, type FoodieIconName } from '../components/ColorfulVisuals'
 import { LanguageSelect } from '../components/LanguageSelect'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { passwordPolicyMinimumLength, validatePasswordConfirmation } from '../lib/passwordPolicy'
@@ -396,6 +397,11 @@ export const AuthPage = () => {
   const resetPasswordError = resetPasswordMutation.error ? getApiErrorMessage(resetPasswordMutation.error, t.authError) : null
   const registerPasswordsMatch = validatePasswordConfirmation(registerForm.password, registerConfirmPassword)
   const resetPasswordsMatch = validatePasswordConfirmation(resetPasswordForm.newPassword, resetConfirmPassword)
+  const authBenefits = [
+    { icon: 'shield', text: t.authBenefitOne },
+    { icon: 'spark', text: t.authBenefitTwo },
+    { icon: 'mail', text: t.authBenefitThree },
+  ] satisfies Array<{ icon: FoodieIconName; text: string }>
 
   return (
     <main>
@@ -410,8 +416,21 @@ export const AuthPage = () => {
                       <Badge bg='success'>{t.authHeroBadge}</Badge>
                       <LanguageSelect className='form-select form-select-sm foodie-language-select' />
                     </div>
+                    <div className='foodie-auth-visual mb-4'>
+                      <AuthIllustration />
+                    </div>
                     <h1 className='display-6 text-dark fw-semibold mb-3'>{t.authHeroTitle}</h1>
                     <p className='text-secondary mb-4'>{t.authHeroDescription}</p>
+                    <ul className='list-unstyled foodie-benefit-list mb-0'>
+                      {authBenefits.map((benefit) => (
+                        <li key={benefit.text} className='foodie-benefit-item'>
+                          <span className='foodie-benefit-icon'>
+                            <FoodieIcon name={benefit.icon} className='foodie-inline-icon' />
+                          </span>
+                          <span>{benefit.text}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </Col>
                   <Col lg={7} className='p-4 p-lg-5 bg-white'>
                     <Tabs activeKey={activeTab} onSelect={(key) => setActiveTab(key ?? 'login')} className='mb-4'>

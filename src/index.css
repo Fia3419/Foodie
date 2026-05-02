@@ -1,5 +1,5 @@
 :root {
-  --bs-body-font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+  --bs-body-font-family: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
   /* High-contrast palette tuned for WCAG AA (>= 4.5:1) against the light app background */
   --bs-primary: #145448;
   --bs-primary-rgb: 20, 84, 72;
@@ -40,6 +40,21 @@ body {
   margin: 0;
   color: var(--bs-body-color);
   background:
+    radial-gradient(
+      circle at 15% 18%,
+      rgba(255, 189, 92, 0.24),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 80% 12%,
+      rgba(86, 167, 232, 0.18),
+      transparent 20%
+    ),
+    radial-gradient(
+      circle at 82% 84%,
+      rgba(93, 186, 138, 0.14),
+      transparent 22%
+    ),
     radial-gradient(
       circle at top left,
       rgba(255, 255, 255, 0.88),

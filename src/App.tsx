@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Badge, Button, Container, Nav, Navbar, Spinner, Stack } from 'react-bootstrap'
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
+import { FoodieIcon, type FoodieIconName } from './components/ColorfulVisuals'
 import { LanguageSelect } from './components/LanguageSelect'
 import { useLanguageContext } from './contexts/LanguageContext'
 import { useSessionContext } from './contexts/SessionContext'
@@ -20,12 +21,12 @@ function App() {
   const { logout, isPending } = useLogoutAction()
 
   const navigation = [
-    { to: '/', label: t.navDashboard },
-    { to: '/log', label: t.navFoodLog },
-    { to: '/progress', label: t.navProgress },
-    { to: '/recipes', label: t.navRecipes },
-    { to: '/settings', label: t.settings },
-  ]
+    { to: '/', label: t.navDashboard, icon: 'dashboard' },
+    { to: '/log', label: t.navFoodLog, icon: 'foodLog' },
+    { to: '/progress', label: t.navProgress, icon: 'progress' },
+    { to: '/recipes', label: t.navRecipes, icon: 'recipes' },
+    { to: '/settings', label: t.settings, icon: 'settings' },
+  ] satisfies Array<{ to: string; label: string; icon: FoodieIconName }>
 
   if (!isReady) {
     return (
@@ -48,7 +49,12 @@ function App() {
       <header>
         <Navbar expand="lg" className="foodie-navbar py-3" expanded={expanded}>
           <Container>
-            <Navbar.Brand className="fw-semibold text-dark" as="span">{t.appName}</Navbar.Brand>
+            <Navbar.Brand className="foodie-brand fw-semibold text-dark" as="span">
+              <span className="foodie-brand-mark">
+                <FoodieIcon name="spark" className="foodie-brand-icon" />
+              </span>
+              <span>{t.appName}</span>
+            </Navbar.Brand>
             <Navbar.Toggle aria-controls="foodie-navigation" aria-label={t.primaryNavigationLabel} onClick={() => setExpanded((value) => !value)} />
             <Navbar.Collapse id="foodie-navigation">
               <Nav as="ul" className="ms-auto gap-lg-2" aria-label={t.primaryNavigationLabel}>
@@ -60,7 +66,10 @@ function App() {
                       end={item.to === '/'}
                       onClick={() => setExpanded(false)}
                     >
-                      {item.label}
+                      <span className="foodie-nav-link-content">
+                        <FoodieIcon name={item.icon} className="foodie-nav-icon" />
+                        <span>{item.label}</span>
+                      </span>
                     </Nav.Link>
                   </Nav.Item>
                 ))}

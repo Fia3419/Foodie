@@ -1,27 +1,55 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Alert, Button, Form, ListGroup, Spinner, Stack } from 'react-bootstrap'
 import { useNutritionMacrosMutation, useNutritionSearchQuery } from '../api/foodieApi'
 import { useLanguageContext } from '../contexts/LanguageContext'
 import { NutritionMacros } from '../types/models'
+import { estimateGrams } from '../lib/unitConversion'
 
 interface IngredientNutritionLookupProps {
-  initialGrams?: number
+  amount: number
+  unit: string
   onApply: (macros: NutritionMacros) => void
 }
 
-export const IngredientNutritionLookup = ({ initialGrams = 100, onApply }: IngredientNutritionLookupProps) => {
+const computeDerivedGrams = (amount: number, unit: string): number => {
+  const estimated = estimateGrams(amount, unit)
+  if (estimated > 0) {
+    return Math.round(estimated)
+  }
+  return amount > 0 ? Math.round(amount) : 100
+}
+
+export const IngredientNutritionLookup = ({ amount, unit, onApply }: IngredientNutritionLookupProps) => {
   const { t } = useLanguageContext()
+  const derivedGrams = computeDerivedGrams(amount, unit)
   const [query, setQuery] = useState('')
-  const [grams, setGrams] = useState(String(initialGrams))
+  const [grams, setGrams] = useState(String(derivedGrams))
+  const [hasUserOverride, setHasUserOverride] = useState(false)
   const [loadingFoodNumber, setLoadingFoodNumber] = useState<number | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const searchQuery = useNutritionSearchQuery(query)
   const macrosMutation = useNutritionMacrosMutation()
 
+  // Keep the grams field in sync with the ingredient's amount + unit until the
+  // user manually edits it. After that, respect their override.
+  useEffect(() => {
+    if (!hasUserOverride) {
+      setGrams(String(derivedGrams))
+    }
+  }, [derivedGrams, hasUserOverride])
+
   const trimmedQuery = query.trim()
   const showResults = trimmedQuery.length >= 2
   const results = searchQuery.data ?? []
+  const trimmedUnit = unit.trim()
+  const unitIsKnown = trimmedUnit === '' || estimateGrams(1, trimmedUnit) > 0
+  const showUnknownUnitHint = trimmedUnit.length > 0 && !unitIsKnown
+
+  const handleGramsChange = (value: string) => {
+    setHasUserOverride(true)
+    setGrams(value)
+  }
 
   const handleApply = async (foodNumber: number) => {
     const parsedGrams = Number.parseInt(grams, 10)
@@ -38,6 +66,7 @@ export const IngredientNutritionLookup = ({ initialGrams = 100, onApply }: Ingre
       const macros = await macrosMutation.mutateAsync({ foodNumber, grams: parsedGrams })
       onApply(macros)
       setQuery('')
+      setHasUserOverride(false)
     } catch {
       setErrorMessage(t.nutritionLookupNoResults)
     } finally {
@@ -61,12 +90,15 @@ export const IngredientNutritionLookup = ({ initialGrams = 100, onApply }: Ingre
           min={1}
           step={1}
           value={grams}
-          onChange={(event) => setGrams(event.target.value)}
+          onChange={(event) => handleGramsChange(event.target.value)}
           style={{ maxWidth: 100 }}
           aria-label={t.nutritionLookupGramsLabel}
           title={t.nutritionLookupGramsLabel}
         />
       </Stack>
+      {showUnknownUnitHint ? (
+        <div className="small text-secondary">{t.nutritionLookupUnknownUnit(trimmedUnit)}</div>
+      ) : null}
       {errorMessage ? <Alert variant="warning" className="py-1 mb-0 small">{errorMessage}</Alert> : null}
       {showResults ? (
         <ListGroup variant="flush" className="border-top">

@@ -182,6 +182,7 @@ export interface Translation {
   nutritionLookupSearching: string;
   nutritionLookupSource: string;
   nutritionLookupGramsLabel: string;
+  nutritionLookupUnknownUnit: (unit: string) => string;
   importRecipesTitle: string;
   importRecipesDescription: string;
   importRecipesPlaceholder: string;
@@ -393,6 +394,8 @@ export const translations: Record<AppLanguage, Translation> = {
     nutritionLookupSearching: "Searching...",
     nutritionLookupSource: "Source: Livsmedelsverket",
     nutritionLookupGramsLabel: "Grams",
+    nutritionLookupUnknownUnit: (unit) =>
+      `Unknown unit "${unit}" \u2014 enter grams manually.`,
     importRecipesTitle: "Import recipes",
     importRecipesDescription:
       "Search TheMealDB and save matching recipes to your library.",
@@ -606,6 +609,8 @@ export const translations: Record<AppLanguage, Translation> = {
     nutritionLookupSearching: "Söker...",
     nutritionLookupSource: "Källa: Livsmedelsverket",
     nutritionLookupGramsLabel: "Gram",
+    nutritionLookupUnknownUnit: (unit) =>
+      `Okänd enhet "${unit}" \u2014 ange gram manuellt.`,
     importRecipesTitle: "Importera recept",
     importRecipesDescription:
       "Sök på TheMealDB och spara matchande recept i ditt bibliotek.",

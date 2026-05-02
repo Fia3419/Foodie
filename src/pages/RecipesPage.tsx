@@ -7,6 +7,7 @@ import { getLocalDateInputValue, getLocalTimeInputValue } from '../lib/dateTime'
 import { buildGroceryListItems, buildGroceryListText, readPlannedRecipeIds, writePlannedRecipeIds } from '../lib/groceryPlanner'
 import { DEFAULT_DINNER_MEAL, MEAL_OPTIONS } from '../lib/mealOptions'
 import { parseNumberInput } from '../lib/numberInput'
+import { estimateGrams } from '../lib/unitConversion'
 import { IngredientNutritionLookup } from '../components/IngredientNutritionLookup'
 
 interface RecipeIngredientFormValue extends Omit<RecipeIngredient, 'amount' | 'calories' | 'protein' | 'carbs' | 'fat'> {
@@ -125,72 +126,11 @@ const formatIngredientSummary = (ingredient: RecipeIngredient) => {
   return ingredient.name + ' (' + ingredient.amount + unitPart + ', ' + ingredient.calories + ' kcal)'
 }
 
-const unitToGrams: Record<string, number> = {
-  g: 1,
-  gram: 1,
-  grams: 1,
-  kg: 1000,
-  ml: 1,
-  cl: 10,
-  dl: 100,
-  l: 1000,
-  liter: 1000,
-  tsk: 5,
-  tsp: 5,
-  msk: 15,
-  tbsp: 15,
-  krm: 1,
-  nypa: 1,
-  pinch: 1,
-  skvätt: 5,
-  dash: 5,
-  klyfta: 4,
-  klyftor: 4,
-  clove: 4,
-  cloves: 4,
-  skiva: 20,
-  skivor: 20,
-  slice: 20,
-  slices: 20,
-  st: 50,
-  stk: 50,
-  styck: 50,
-  'styck.': 50,
-  stycken: 50,
-  piece: 50,
-  pieces: 50,
-  portion: 200,
-  portioner: 200,
-  cup: 240,
-  cups: 240,
-  kopp: 240,
-  koppar: 240,
-  oz: 28,
-  lb: 454,
-  knippe: 50,
-  bunch: 50,
-}
-
 const emptyNutritionSummary: RecipeNutritionSummary = {
   calories: 0,
   protein: 0,
   carbs: 0,
   fat: 0,
-}
-
-const estimateGrams = (amount: number, unit: string): number => {
-  if (amount <= 0) {
-    return 0
-  }
-
-  const trimmed = unit.trim().toLowerCase()
-
-  if (trimmed === '') {
-    return amount
-  }
-
-  const factor = unitToGrams[trimmed]
-  return factor ? amount * factor : 0
 }
 
 const summarizeIngredientNutrition = (ingredients: RecipeIngredient[]): RecipeNutritionSummary =>
@@ -382,11 +322,14 @@ export const RecipesPage = () => {
       return
     }
 
+    const hasUserAmount = parseNumberInput(ingredient.amount) > 0
+    const hasUserUnit = ingredient.unit.trim().length > 0
+
     updateIngredient(index, {
       ...ingredient,
       name: ingredient.name.trim() ? ingredient.name : macros.name,
-      amount: String(macros.grams),
-      unit: ingredient.unit.trim() ? ingredient.unit : 'g',
+      amount: hasUserAmount ? ingredient.amount : String(macros.grams),
+      unit: hasUserUnit ? ingredient.unit : 'g',
       calories: String(macros.calories),
       protein: String(macros.protein),
       carbs: String(macros.carbs),
@@ -950,7 +893,8 @@ export const RecipesPage = () => {
                           </Col>
                           <Col xs={12}>
                             <IngredientNutritionLookup
-                              initialGrams={parseNumberInput(ingredient.amount, 100) || 100}
+                              amount={parseNumberInput(ingredient.amount)}
+                              unit={ingredient.unit}
                               onApply={(macros) => applyNutritionLookupToIngredient(index, macros)}
                             />
                           </Col>
